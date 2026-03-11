@@ -1,0 +1,17 @@
+packages:
+  "framer-motion": "For smooth step-by-step wizard transitions and page animations"
+  "clsx": "For conditional class name merging"
+  "tailwind-merge": "For conditional class name merging"
+  "lucide-react": "For UI icons"
+
+images:
+  - path: "artifacts/adventure-guide/public/images/parchment-bg.png"
+    description: "A dark, aged gothic fantasy parchment texture, seamless, dark forest green undertones with subtle weathered gold flecks and grunge, suitable for a dark mode RPG app background"
+    aspect_ratio: "16:9"
+  - path: "artifacts/adventure-guide/public/images/ornate-border.png"
+    description: "An ornate, gothic medieval border frame in aged gold on a transparent background, highly detailed, perfect for framing a portrait"
+    aspect_ratio: "1:1"
+
+notes:
+  - Using localStorage for all data persistence as requested (no backend API required).
+  - App is mobile-first, designed for ~480px max width centered on desktop.

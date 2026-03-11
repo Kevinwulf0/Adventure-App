@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Adventure Guide"
+version = "1.0.0"
+id = "artifacts/adventure-guide"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 24305
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/adventure-guide run dev"
+
+[services.env]
+PORT = "24305"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/adventure-guide", "run", "build"]
+publicDir = "artifacts/adventure-guide/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
