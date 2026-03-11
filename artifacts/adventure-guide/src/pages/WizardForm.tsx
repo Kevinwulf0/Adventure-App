@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CharacterMode, PowerLevel, generateStats, generateBackstory, generatePortraitUrl, Character } from '@/lib/dnd-engine';
@@ -7,26 +7,100 @@ import { ArrowRight, ArrowLeft, Wand2, Sparkles, PenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCharacters } from '@/hooks/use-characters';
 
-function D20Icon({ className }: { className?: string }) {
+function D20Face({ num }: { num: number }) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 64 64"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={className}
+      className="w-12 h-12 shrink-0"
       aria-hidden="true"
     >
-      <polygon points="12,2 22,8 22,16 12,22 2,16 2,8" />
-      <polygon points="12,2 17,8 12,13 7,8" />
-      <line x1="7" y1="8" x2="2" y2="8" />
-      <line x1="17" y1="8" x2="22" y2="8" />
-      <line x1="12" y1="13" x2="12" y2="22" />
-      <line x1="12" y1="13" x2="2" y2="16" />
-      <line x1="12" y1="13" x2="22" y2="16" />
+      {/* Outer die body */}
+      <polygon
+        points="32,3 57,17 57,47 32,61 7,47 7,17"
+        strokeWidth="2"
+        fill="rgba(234,179,8,0.08)"
+      />
+      {/* Top highlighted face — where the number lives */}
+      <polygon
+        points="32,3 57,17 7,17"
+        strokeWidth="1.5"
+        fill="rgba(234,179,8,0.18)"
+      />
+      {/* Face division lines — creates the icosahedral look */}
+      <line x1="32" y1="3"  x2="32" y2="61" strokeWidth="1"   strokeOpacity="0.45" />
+      <line x1="7"  y1="17" x2="57" y2="47" strokeWidth="1"   strokeOpacity="0.45" />
+      <line x1="57" y1="17" x2="7"  y2="47" strokeWidth="1"   strokeOpacity="0.45" />
+      <line x1="7"  y1="17" x2="7"  y2="47" strokeWidth="1.5" strokeOpacity="0.3"  />
+      <line x1="57" y1="17" x2="57" y2="47" strokeWidth="1.5" strokeOpacity="0.3"  />
+      {/* Number on the top face */}
+      <text
+        x="32"
+        y="15"
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={num >= 10 ? "10" : "11"}
+        fontWeight="bold"
+        fontFamily="Georgia, serif"
+        fill="currentColor"
+        stroke="none"
+        letterSpacing="-0.5"
+      >
+        {num}
+      </text>
     </svg>
+  );
+}
+
+function D20Button({ onRoll }: { onRoll: (name: string) => void }) {
+  const [isRolling, setIsRolling] = useState(false);
+  const [displayNum, setDisplayNum] = useState(20);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
+
+  const handleClick = () => {
+    if (isRolling) return;
+    setIsRolling(true);
+
+    let ticks = 0;
+    const totalTicks = 20;
+    // Speed starts fast, slows down toward the end
+    const getDelay = (tick: number) => Math.min(50 + tick * 8, 160);
+
+    const tick = () => {
+      setDisplayNum(Math.floor(Math.random() * 20) + 1);
+      ticks++;
+      if (ticks >= totalTicks) {
+        setDisplayNum(20);
+        setIsRolling(false);
+        onRoll(randomFantasyName());
+      } else {
+        intervalRef.current = setTimeout(tick, getDelay(ticks));
+      }
+    };
+    intervalRef.current = setTimeout(tick, getDelay(0));
+  };
+
+  return (
+    <motion.button
+      onClick={handleClick}
+      disabled={isRolling}
+      animate={isRolling ? {
+        rotate:  [0, -22, 28, -18, 24, -12, 16, -6, 8, -3, 0],
+        y:       [0, -10,  4, -7,   3,  -4,  2, -2,  1,  0, 0],
+        scale:   [1, 1.18, 0.93, 1.12, 0.96, 1.07, 0.98, 1.04, 0.99, 1.01, 1],
+      } : { rotate: 0, y: 0, scale: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+      whileHover={!isRolling ? { scale: 1.05 } : {}}
+      className="flex items-center gap-3 px-6 py-3 rounded-xl border-2 border-primary/30 bg-card text-primary font-display tracking-wider text-sm hover:border-primary hover:bg-primary/10 transition-colors duration-200 min-h-[48px] disabled:opacity-70 disabled:cursor-not-allowed"
+    >
+      <D20Face num={displayNum} />
+      {isRolling ? 'Rolling...' : 'Roll a Name'}
+    </motion.button>
   );
 }
 
@@ -190,15 +264,7 @@ export default function WizardForm({ mode }: WizardFormProps) {
               onKeyDown={(e) => e.key === 'Enter' && name && handleNext()}
             />
             <div className="flex justify-center pt-2">
-              <motion.button
-                onClick={() => setName(randomFantasyName())}
-                whileTap={{ scale: 0.92, rotate: -12 }}
-                whileHover={{ scale: 1.05 }}
-                className="flex items-center gap-3 px-6 py-3 rounded-xl border-2 border-primary/30 bg-card text-primary font-display tracking-wider text-sm hover:border-primary hover:bg-primary/10 transition-colors duration-200 min-h-[48px]"
-              >
-                <D20Icon className="w-6 h-6 shrink-0" />
-                Roll a Name
-              </motion.button>
+              <D20Button onRoll={(generated) => setName(generated)} />
             </div>
           </div>
         );
