@@ -117,17 +117,12 @@ interface NameQuote {
 }
 
 const NAME_QUOTES: NameQuote[] = [
+  // ── Patrick Rothfuss ────────────────────────────────────────────────────
   {
     text: "Words are pale shadows of forgotten names. As names have power, words have power. Words can light fires in the minds of men.",
     source: "Patrick Rothfuss",
     work: "The Name of the Wind",
     year: 2007,
-  },
-  {
-    text: "Fear of a name increases fear of the thing itself.",
-    source: "J.K. Rowling",
-    work: "Harry Potter and the Philosopher's Stone",
-    year: 1997,
   },
   {
     text: "Not all those who wander are lost.",
@@ -136,28 +131,34 @@ const NAME_QUOTES: NameQuote[] = [
     year: 1954,
   },
   {
-    text: "To light a candle is to cast a shadow.",
-    source: "Ursula K. Le Guin",
-    work: "A Wizard of Earthsea",
-    year: 1968,
-  },
-  {
     text: "All we have to decide is what to do with the time that is given us.",
     source: "J.R.R. Tolkien",
     work: "The Fellowship of the Ring",
     year: 1954,
   },
   {
-    text: "A reader lives a thousand lives before he dies. The man who never reads lives only one.",
-    source: "George R.R. Martin",
-    work: "A Dance with Dragons",
-    year: 2011,
+    text: "Even the smallest person can change the course of the future.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
   },
   {
-    text: "My name is Kvothe. I have stolen princesses back from sleeping barrow kings. I burned down the town of Trebon. I have spent the night with Felurian and left with my sanity and my life.",
-    source: "Patrick Rothfuss",
-    work: "The Name of the Wind",
-    year: 2007,
+    text: "I will not say: do not weep; for not all tears are an evil.",
+    source: "J.R.R. Tolkien",
+    work: "The Return of the King",
+    year: 1955,
+  },
+  {
+    text: "It's a dangerous business, Frodo, going out your door. You step onto the road, and if you don't keep your feet, there's no knowing where you might be swept off to.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
+  },
+  {
+    text: "Faithless is he that says farewell when the road darkens.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
   },
   {
     text: "In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole — it was a hobbit-hole, and that means comfort.",
@@ -166,16 +167,586 @@ const NAME_QUOTES: NameQuote[] = [
     year: 1937,
   },
   {
+    text: "Never laugh at live dragons.",
+    source: "J.R.R. Tolkien",
+    work: "The Hobbit",
+    year: 1937,
+  },
+  {
+    text: "Adventures are not all pony-rides in May-sunshine.",
+    source: "J.R.R. Tolkien",
+    work: "The Hobbit",
+    year: 1937,
+  },
+  {
+    text: "I am looking for someone to share in an adventure that I am arranging.",
+    source: "J.R.R. Tolkien",
+    work: "The Hobbit",
+    year: 1937,
+  },
+  {
+    text: "Speak, friend, and enter.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
+  },
+  {
+    text: "It does not do to leave a live dragon out of your calculations, if you live near him.",
+    source: "J.R.R. Tolkien",
+    work: "The Hobbit",
+    year: 1937,
+  },
+  {
+    text: "The world is indeed full of peril, and in it there are many dark places; but still there is much that is fair, and though in all lands love is now mingled with grief, it grows perhaps the greater.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
+  },
+  {
+    text: "End? No, the journey doesn't end here. Death is just another path, one that we all must take.",
+    source: "J.R.R. Tolkien",
+    work: "The Return of the King",
+    year: 1955,
+  },
+  // ── J.K. Rowling ────────────────────────────────────────────────────────
+  {
+    text: "Fear of a name increases fear of the thing itself.",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Philosopher's Stone",
+    year: 1997,
+  },
+  {
+    text: "It is our choices, Harry, that show what we truly are, far more than our abilities.",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Chamber of Secrets",
+    year: 1998,
+  },
+  {
+    text: "Words are, in my not-so-humble opinion, our most inexhaustible source of magic.",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Deathly Hallows",
+    year: 2007,
+  },
+  {
+    text: "Of course it is happening inside your head, Harry, but why on earth should that mean that it is not real?",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Deathly Hallows",
+    year: 2007,
+  },
+  {
+    text: "To the well-organized mind, death is but the next great adventure.",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Philosopher's Stone",
+    year: 1997,
+  },
+  {
+    text: "We are only as strong as we are united, as weak as we are divided.",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Goblet of Fire",
+    year: 2000,
+  },
+  {
+    text: "The truth is a beautiful and terrible thing, and should therefore be treated with great caution.",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Philosopher's Stone",
+    year: 1997,
+  },
+  // ── Patrick Rothfuss ────────────────────────────────────────────────────
+  {
+    text: "My name is Kvothe. I have stolen princesses back from sleeping barrow kings. I burned down the town of Trebon. I have spent the night with Felurian and left with my sanity and my life.",
+    source: "Patrick Rothfuss",
+    work: "The Name of the Wind",
+    year: 2007,
+  },
+  {
+    text: "It's the questions we can't answer that teach us the most. They teach us how to think.",
+    source: "Patrick Rothfuss",
+    work: "The Name of the Wind",
+    year: 2007,
+  },
+  {
+    text: "There are three things all wise men fear: the sea in storm, a night with no moon, and the anger of a gentle man.",
+    source: "Patrick Rothfuss",
+    work: "The Wise Man's Fear",
+    year: 2011,
+  },
+  {
+    text: "A long stretch of road will teach you more about yourself than a hundred years of quiet.",
+    source: "Patrick Rothfuss",
+    work: "The Wise Man's Fear",
+    year: 2011,
+  },
+  // ── Ursula K. Le Guin ───────────────────────────────────────────────────
+  {
+    text: "To light a candle is to cast a shadow.",
+    source: "Ursula K. Le Guin",
+    work: "A Wizard of Earthsea",
+    year: 1968,
+  },
+  {
+    text: "You must not change one thing, one pebble, one grain of sand, until you know what good and evil will follow on that act.",
+    source: "Ursula K. Le Guin",
+    work: "A Wizard of Earthsea",
+    year: 1968,
+  },
+  {
+    text: "The only thing that makes life possible is permanent, intolerable uncertainty: not knowing what comes next.",
+    source: "Ursula K. Le Guin",
+    work: "The Left Hand of Darkness",
+    year: 1969,
+  },
+  {
+    text: "Love doesn't just sit there, like a stone; it has to be made, like bread, remade all the time, made new.",
+    source: "Ursula K. Le Guin",
+    work: "The Lathe of Heaven",
+    year: 1971,
+  },
+  {
+    text: "It is good to have an end to journey toward, but it is the journey that matters in the end.",
+    source: "Ursula K. Le Guin",
+    work: "The Left Hand of Darkness",
+    year: 1969,
+  },
+  // ── George R.R. Martin ──────────────────────────────────────────────────
+  {
+    text: "A reader lives a thousand lives before he dies. The man who never reads lives only one.",
+    source: "George R.R. Martin",
+    work: "A Dance with Dragons",
+    year: 2011,
+  },
+  {
+    text: "When you play the game of thrones, you win or you die.",
+    source: "George R.R. Martin",
+    work: "A Game of Thrones",
+    year: 1996,
+  },
+  {
+    text: "The man who passes the sentence should swing the sword.",
+    source: "George R.R. Martin",
+    work: "A Game of Thrones",
+    year: 1996,
+  },
+  {
+    text: "Different roads sometimes lead to the same castle.",
+    source: "George R.R. Martin",
+    work: "A Game of Thrones",
+    year: 1996,
+  },
+  // ── C.S. Lewis ──────────────────────────────────────────────────────────
+  {
     text: "Some day you will be old enough to start reading fairy tales again.",
     source: "C.S. Lewis",
     work: "Dedication, The Lion, the Witch and the Wardrobe",
     year: 1950,
   },
   {
-    text: "Even the smallest person can change the course of the future.",
-    source: "J.R.R. Tolkien",
-    work: "The Fellowship of the Ring",
-    year: 1954,
+    text: "Courage, dear heart.",
+    source: "C.S. Lewis",
+    work: "The Voyage of the Dawn Treader",
+    year: 1952,
+  },
+  {
+    text: "He is not a tame lion.",
+    source: "C.S. Lewis",
+    work: "The Lion, the Witch and the Wardrobe",
+    year: 1950,
+  },
+  {
+    text: "There are far, far better things ahead than any we leave behind.",
+    source: "C.S. Lewis",
+    work: "Letters of C.S. Lewis",
+    year: 1966,
+  },
+  // ── Neil Gaiman ─────────────────────────────────────────────────────────
+  {
+    text: "Fairy tales are more than true: not because they tell us that dragons exist, but because they tell us that dragons can be beaten.",
+    source: "Neil Gaiman",
+    work: "Coraline",
+    year: 2002,
+  },
+  {
+    text: "Stories are like roads leading to the places you'd never find on your own.",
+    source: "Neil Gaiman",
+    work: "The Graveyard Book",
+    year: 2008,
+  },
+  {
+    text: "You get what anybody gets — you get a lifetime.",
+    source: "Neil Gaiman",
+    work: "The Sandman: Dream Country",
+    year: 1991,
+  },
+  {
+    text: "Ghosts are memories. That's all they are — stories that the living tell themselves to make the world make sense.",
+    source: "Neil Gaiman",
+    work: "American Gods",
+    year: 2001,
+  },
+  {
+    text: "There's never been a true war that wasn't fought between two sets of people who were certain they were in the right.",
+    source: "Neil Gaiman",
+    work: "American Gods",
+    year: 2001,
+  },
+  {
+    text: "God does not play dice with the universe; He plays an ineffable game of his own devising.",
+    source: "Terry Pratchett & Neil Gaiman",
+    work: "Good Omens",
+    year: 1990,
+  },
+  // ── Terry Pratchett ─────────────────────────────────────────────────────
+  {
+    text: "Stories of imagination tend to upset those without one.",
+    source: "Terry Pratchett",
+    work: "Hogfather",
+    year: 1996,
+  },
+  {
+    text: "People think that stories are shaped by people. In fact, it's the other way around.",
+    source: "Terry Pratchett",
+    work: "Witches Abroad",
+    year: 1991,
+  },
+  {
+    text: "In the beginning there was nothing, which exploded.",
+    source: "Terry Pratchett",
+    work: "Lords and Ladies",
+    year: 1992,
+  },
+  {
+    text: "Sometimes it is better to light a flamethrower than curse the darkness.",
+    source: "Terry Pratchett",
+    work: "Men at Arms",
+    year: 1993,
+  },
+  {
+    text: "The truth may be out there, but lies are inside your head.",
+    source: "Terry Pratchett",
+    work: "Hogfather",
+    year: 1996,
+  },
+  {
+    text: "Fantasy is an exercise bicycle for the mind. It might not take you anywhere, but it tones up the muscles that can.",
+    source: "Terry Pratchett",
+    work: "Introduction, Wyrm's Footprints",
+    year: 1993,
+  },
+  {
+    text: "Stories have to be told or they die, and when they die, we can't remember who we are or why we're here.",
+    source: "Terry Pratchett",
+    work: "Witches Abroad",
+    year: 1991,
+  },
+  // ── Brandon Sanderson ───────────────────────────────────────────────────
+  {
+    text: "The most important step a man can take. It's not the first one, is it? It's the next one. Always the next step.",
+    source: "Brandon Sanderson",
+    work: "Oathbringer",
+    year: 2017,
+  },
+  {
+    text: "There is always another secret.",
+    source: "Brandon Sanderson",
+    work: "Mistborn: The Final Empire",
+    year: 2006,
+  },
+  {
+    text: "I will remember those who have been forgotten.",
+    source: "Brandon Sanderson",
+    work: "Words of Radiance",
+    year: 2014,
+  },
+  {
+    text: "The purpose of a storyteller is not to tell you how to think, but to give you questions to think upon.",
+    source: "Brandon Sanderson",
+    work: "The Way of Kings",
+    year: 2010,
+  },
+  {
+    text: "A story doesn't say anything. It just is. What people make of it is up to them.",
+    source: "Brandon Sanderson",
+    work: "Elantris",
+    year: 2005,
+  },
+  // ── Robert Jordan ────────────────────────────────────────────────────────
+  {
+    text: "The Wheel of Time turns, and Ages come and pass, leaving memories that become legend.",
+    source: "Robert Jordan",
+    work: "The Eye of the World",
+    year: 1990,
+  },
+  {
+    text: "The wheel weaves as the wheel wills.",
+    source: "Robert Jordan",
+    work: "The Eye of the World",
+    year: 1990,
+  },
+  {
+    text: "Death is lighter than a feather, duty heavier than a mountain.",
+    source: "Robert Jordan",
+    work: "The Eye of the World",
+    year: 1990,
+  },
+  // ── Leigh Bardugo ────────────────────────────────────────────────────────
+  {
+    text: "The heart is an arrow. It demands aim to land true.",
+    source: "Leigh Bardugo",
+    work: "Six of Crows",
+    year: 2015,
+  },
+  {
+    text: "No mourners. No funerals.",
+    source: "Leigh Bardugo",
+    work: "Six of Crows",
+    year: 2015,
+  },
+  {
+    text: "I am not ruined. I am ruination.",
+    source: "Leigh Bardugo",
+    work: "Crooked Kingdom",
+    year: 2016,
+  },
+  // ── Robin Hobb ───────────────────────────────────────────────────────────
+  {
+    text: "There is magic in names. And it is not a small magic.",
+    source: "Robin Hobb",
+    work: "Assassin's Apprentice",
+    year: 1995,
+  },
+  {
+    text: "The fool knows who he is. The rest of us spend our lives finding out.",
+    source: "Robin Hobb",
+    work: "Fool's Errand",
+    year: 2001,
+  },
+  // ── Christopher Paolini ─────────────────────────────────────────────────
+  {
+    text: "Live in the present, remember the past, and fear not the future, for it doesn't exist and never shall.",
+    source: "Christopher Paolini",
+    work: "Eragon",
+    year: 2003,
+  },
+  // ── Michael Ende ─────────────────────────────────────────────────────────
+  {
+    text: "Every real story is a Never Ending Story.",
+    source: "Michael Ende",
+    work: "The Neverending Story",
+    year: 1979,
+  },
+  // ── William Goldman ──────────────────────────────────────────────────────
+  {
+    text: "Hello. My name is Inigo Montoya. You killed my father. Prepare to die.",
+    source: "William Goldman",
+    work: "The Princess Bride",
+    year: 1973,
+  },
+  {
+    text: "Life is pain, Highness. Anyone who says differently is selling something.",
+    source: "William Goldman",
+    work: "The Princess Bride",
+    year: 1973,
+  },
+  {
+    text: "As you wish.",
+    source: "William Goldman",
+    work: "The Princess Bride",
+    year: 1973,
+  },
+  // ── Diana Wynne Jones ────────────────────────────────────────────────────
+  {
+    text: "I think we ought to live happily ever after.",
+    source: "Diana Wynne Jones",
+    work: "Howl's Moving Castle",
+    year: 1986,
+  },
+  // ── Joe Abercrombie ──────────────────────────────────────────────────────
+  {
+    text: "You have to be realistic about these things.",
+    source: "Joe Abercrombie",
+    work: "The Blade Itself",
+    year: 2006,
+  },
+  {
+    text: "The blade itself incites to deeds of violence.",
+    source: "Joe Abercrombie",
+    work: "The Blade Itself",
+    year: 2006,
+  },
+  // ── Madeline Miller ──────────────────────────────────────────────────────
+  {
+    text: "I could recognize him by touch alone, by smell; I would know him blind, by the way his breaths came and his feet struck the earth.",
+    source: "Madeline Miller",
+    work: "The Song of Achilles",
+    year: 2011,
+  },
+  {
+    text: "Name one hero who was happy.",
+    source: "Madeline Miller",
+    work: "The Song of Achilles",
+    year: 2011,
+  },
+  {
+    text: "I am made of memories.",
+    source: "Madeline Miller",
+    work: "Circe",
+    year: 2018,
+  },
+  // ── Jim Butcher ──────────────────────────────────────────────────────────
+  {
+    text: "My name is Harry Blackstone Copperfield Dresden. Conjure by it at your own risk.",
+    source: "Jim Butcher",
+    work: "Storm Front",
+    year: 2000,
+  },
+  // ── Terry Brooks ─────────────────────────────────────────────────────────
+  {
+    text: "Sometimes the journey is more important than the destination.",
+    source: "Terry Brooks",
+    work: "The Sword of Shannara",
+    year: 1977,
+  },
+  // ── Robert E. Howard ─────────────────────────────────────────────────────
+  {
+    text: "Conan the Cimmerian. That name had spread across the world like fire across dry grass.",
+    source: "Robert E. Howard",
+    work: "The Hour of the Dragon",
+    year: 1936,
+  },
+  // ── Anne McCaffrey ───────────────────────────────────────────────────────
+  {
+    text: "Impress a dragon, and your life is linked with his, for better or for worse.",
+    source: "Anne McCaffrey",
+    work: "Dragonflight",
+    year: 1968,
+  },
+  // ── T.H. White ───────────────────────────────────────────────────────────
+  {
+    text: "The best thing for being sad is to learn something.",
+    source: "T.H. White",
+    work: "The Once and Future King",
+    year: 1958,
+  },
+  {
+    text: "You are the best knight I have ever heard of. Now I have to find out whether you are a good man.",
+    source: "T.H. White",
+    work: "The Once and Future King",
+    year: 1958,
+  },
+  // ── Piers Anthony ────────────────────────────────────────────────────────
+  {
+    text: "The sword was not the answer, but sometimes one had to speak its language.",
+    source: "Piers Anthony",
+    work: "A Spell for Chameleon",
+    year: 1977,
+  },
+  // ── Roger Zelazny ────────────────────────────────────────────────────────
+  {
+    text: "My name is a killing word.",
+    source: "Roger Zelazny",
+    work: "Nine Princes in Amber",
+    year: 1970,
+  },
+  {
+    text: "I have walked in places where names have power beyond your imagining.",
+    source: "Roger Zelazny",
+    work: "Nine Princes in Amber",
+    year: 1970,
+  },
+  // ── Guy Gavriel Kay ──────────────────────────────────────────────────────
+  {
+    text: "There are no wrong roads to anywhere.",
+    source: "Guy Gavriel Kay",
+    work: "Tigana",
+    year: 1990,
+  },
+  {
+    text: "To name a thing is to own it. This is the first truth of magic.",
+    source: "Guy Gavriel Kay",
+    work: "Tigana",
+    year: 1990,
+  },
+  // ── Patricia McKillip ────────────────────────────────────────────────────
+  {
+    text: "A name is a road. It leads you somewhere.",
+    source: "Patricia A. McKillip",
+    work: "The Riddle-Master of Hed",
+    year: 1976,
+  },
+  // ── Tad Williams ─────────────────────────────────────────────────────────
+  {
+    text: "Beginnings are always messy.",
+    source: "Tad Williams",
+    work: "The Dragonbone Chair",
+    year: 1988,
+  },
+  // ── David Eddings ────────────────────────────────────────────────────────
+  {
+    text: "The world has always been filled with heroes. Most of them just don't know it yet.",
+    source: "David Eddings",
+    work: "Pawn of Prophecy",
+    year: 1982,
+  },
+  // ── Fantasy Films ────────────────────────────────────────────────────────
+  {
+    text: "I am no man!",
+    source: "Fran Walsh, Philippa Boyens & Peter Jackson",
+    work: "The Lord of the Rings: The Return of the King (film)",
+    year: 2003,
+  },
+  {
+    text: "A wizard is never late, nor is he early; he arrives precisely when he means to.",
+    source: "Fran Walsh, Philippa Boyens & Peter Jackson",
+    work: "The Lord of the Rings: The Fellowship of the Ring (film)",
+    year: 2001,
+  },
+  {
+    text: "You have no power over me.",
+    source: "Terry Jones & Dennis Lee",
+    work: "Labyrinth (film)",
+    year: 1986,
+  },
+  {
+    text: "It does not do to forget one's name.",
+    source: "Hayao Miyazaki",
+    work: "Spirited Away (film)",
+    year: 2001,
+  },
+  {
+    text: "It is the doom of men that they forget.",
+    source: "John Boorman",
+    work: "Excalibur (film)",
+    year: 1981,
+  },
+  // ── Additional ───────────────────────────────────────────────────────────
+  {
+    text: "A hero is someone who has given his or her life to something bigger than oneself.",
+    source: "Joseph Campbell",
+    work: "The Hero with a Thousand Faces",
+    year: 1949,
+  },
+  {
+    text: "When the hero's journey is taken, the first step is always the hardest and the most important.",
+    source: "Joseph Campbell",
+    work: "The Power of Myth",
+    year: 1988,
+  },
+  {
+    text: "She is too fond of books, and it has turned her brain.",
+    source: "Louisa May Alcott",
+    work: "Little Women",
+    year: 1868,
+  },
+  {
+    text: "There is no real ending. It's just the place where you stop the story.",
+    source: "Frank Herbert",
+    work: "Dune",
+    year: 1965,
+  },
+  {
+    text: "I must not fear. Fear is the mind-killer.",
+    source: "Frank Herbert",
+    work: "Dune",
+    year: 1965,
   },
 ];
 
