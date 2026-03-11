@@ -7,6 +7,78 @@ import { ArrowRight, ArrowLeft, Wand2, Sparkles, PenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCharacters } from '@/hooks/use-characters';
 
+function D20Icon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <polygon points="12,2 22,8 22,16 12,22 2,16 2,8" />
+      <polygon points="12,2 17,8 12,13 7,8" />
+      <line x1="7" y1="8" x2="2" y2="8" />
+      <line x1="17" y1="8" x2="22" y2="8" />
+      <line x1="12" y1="13" x2="12" y2="22" />
+      <line x1="12" y1="13" x2="2" y2="16" />
+      <line x1="12" y1="13" x2="22" y2="16" />
+    </svg>
+  );
+}
+
+const FANTASY_NAMES = [
+  'Aelindra', 'Aethos', 'Aldric', 'Arannis', 'Aravel', 'Ardyn', 'Arindel', 'Aurelion',
+  'Baelindra', 'Baern', 'Balasar', 'Belegorn', 'Bryndis', 'Caldris',
+  'Caelindra', 'Caius', 'Caoimhe', 'Casvian', 'Cethric', 'Ciaran', 'Corvin',
+  'Daemar', 'Daeren', 'Dalamar', 'Davan', 'Diavara', 'Draeven', 'Drystan',
+  'Eladrin', 'Elowen', 'Elspeth', 'Emryn', 'Eryndis', 'Estelline',
+  'Faelion', 'Faeryn', 'Falcrest', 'Fendrys', 'Feyra', 'Fionn',
+  'Galadwen', 'Garim', 'Garrick', 'Gedwyn', 'Gethian', 'Gorvyn',
+  'Halvard', 'Hawthorn', 'Heliovar', 'Hrothgar',
+  'Idris', 'Ilindra', 'Ilyran', 'Isadora', 'Ivaine',
+  'Jaeron', 'Jorah', 'Jorindel', 'Jorvyn',
+  'Kaeda', 'Kaelen', 'Kaladrix', 'Kethara', 'Korinn', 'Kyreveth',
+  'Laelindra', 'Landreth', 'Liriel', 'Lorvyn', 'Lucan', 'Lyrian',
+  'Maelindra', 'Malachar', 'Malgavin', 'Marvyn', 'Mordecai', 'Morrigan',
+  'Naevara', 'Naldrin', 'Naomi', 'Nessa', 'Noctis', 'Nyxara',
+  'Oberon', 'Oisin', 'Orivyn', 'Osveth',
+  'Phaedra', 'Phelan', 'Pyreth',
+  'Quentara', 'Quinlan',
+  'Raedyn', 'Rhaenys', 'Riordan', 'Rodaveth', 'Rowan', 'Rykas',
+  'Saelindra', 'Sariel', 'Seraphina', 'Severin', 'Silindra', 'Solara', 'Sylvara',
+  'Taelindra', 'Thalion', 'Theron', 'Thornwick', 'Toryn', 'Traevin',
+  'Ulindra', 'Urien', 'Uryndis',
+  'Vaelis', 'Valdris', 'Varek', 'Velayn', 'Veridian', 'Vorath',
+  'Wulfric', 'Wynnara',
+  'Xanathos', 'Xivara',
+  'Yaelindra', 'Ysolde',
+  'Zaera', 'Zalindra', 'Zephyros', 'Zorindel',
+];
+
+const FANTASY_SURNAMES = [
+  'Ashveil', 'Blackthorn', 'Bloodmoon', 'Coldwater', 'Darkwood', 'Dawnbringer',
+  'Dragonsbane', 'Duskmantle', 'Emberveil', 'Emberglass', 'Eventide',
+  'Frostweave', 'Ghostwalker', 'Gloomhaven', 'Goldenveil', 'Greywarden',
+  'Hellfire', 'Hollowstone', 'Ironveil', 'Jadeheart', 'Lightbane', 'Lorekeep',
+  'Moonwhisper', 'Morvath', 'Nightfall', 'Nightshade', 'Oakheart', 'Ravenscroft',
+  'Redmane', 'Runekeeper', 'Shadowend', 'Shadowmere', 'Shadowveil',
+  'Shadowweaver', 'Silverblade', 'Silverstone', 'Skullcleaver', 'Snowmantle',
+  'Soulreaper', 'Starfall', 'Stoneheart', 'Stormcaller', 'Stormcloak',
+  'Stormsong', 'Stormveil', 'Sundering', 'Swiftarrow', 'Thorngate',
+  'Thundermantle', 'Voidwalker', 'Warstone', 'Whitefang', 'Wildborn',
+  'Windchaser', 'Winterborne', 'Witchwood', 'Wraithbane', 'Wyrmtongue',
+];
+
+function randomFantasyName(): string {
+  const first = FANTASY_NAMES[Math.floor(Math.random() * FANTASY_NAMES.length)];
+  const last = FANTASY_SURNAMES[Math.floor(Math.random() * FANTASY_SURNAMES.length)];
+  return `${first} ${last}`;
+}
+
 const RACES = [
   'Aarakocra', 'Aasimar', 'Astral Elf', 'Autognome',
   'Bugbear', 'Centaur', 'Changeling',
@@ -117,6 +189,17 @@ export default function WizardForm({ mode }: WizardFormProps) {
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && name && handleNext()}
             />
+            <div className="flex justify-center pt-2">
+              <motion.button
+                onClick={() => setName(randomFantasyName())}
+                whileTap={{ scale: 0.92, rotate: -12 }}
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center gap-3 px-6 py-3 rounded-xl border-2 border-primary/30 bg-card text-primary font-display tracking-wider text-sm hover:border-primary hover:bg-primary/10 transition-colors duration-200 min-h-[48px]"
+              >
+                <D20Icon className="w-6 h-6 shrink-0" />
+                Roll a Name
+              </motion.button>
+            </div>
           </div>
         );
 
