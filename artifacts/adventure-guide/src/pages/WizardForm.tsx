@@ -7,7 +7,7 @@ import { ArrowRight, ArrowLeft, Wand2, Sparkles, PenLine } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCharacters } from '@/hooks/use-characters';
 
-function D20Face({ num }: { num: number }) {
+function D20Face({ num, isRolling }: { num: number; isRolling?: boolean }) {
   // Outer hexagon vertices (die silhouette):
   //   T(32,3)  TR(57,17)  BR(57,47)  B(32,61)  BL(7,47)  TL(7,17)
   // Inner triangle (front face, centroid at 32,34):
@@ -15,13 +15,19 @@ function D20Face({ num }: { num: number }) {
   // All 10 visible icosahedral faces are drawn individually so the
   // front face sits perfectly centred and the shading reads as 3-D.
   return (
-    <svg
+    <motion.svg
       viewBox="0 0 64 64"
       fill="none"
       strokeLinecap="round"
       strokeLinejoin="round"
       className="w-12 h-12 shrink-0"
       aria-hidden="true"
+      animate={isRolling ? {
+        rotate: [0, -25, 32, -20, 26, -12, 18, -6, 8, -2, 0],
+        y:      [0, -10,  4,  -7,  3,  -4,  2, -2,  1,  0, 0],
+        scale:  [1, 1.2, 0.92, 1.14, 0.96, 1.07, 0.98, 1.03, 0.99, 1.01, 1],
+      } : { rotate: 0, y: 0, scale: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
     >
       {/* ── Surrounding facets (shaded to simulate upper-left lighting) ── */}
       <polygon points="32,3  7,17  32,16"        fill="rgba(234,179,8,0.17)" stroke="currentColor" strokeWidth="1.5" />
@@ -57,7 +63,7 @@ function D20Face({ num }: { num: number }) {
       >
         {num}
       </text>
-    </svg>
+    </motion.svg>
   );
 }
 
@@ -92,21 +98,14 @@ function D20Button({ onRoll }: { onRoll: (name: string) => void }) {
   };
 
   return (
-    <motion.button
+    <button
       onClick={handleClick}
       disabled={isRolling}
-      animate={isRolling ? {
-        rotate:  [0, -22, 28, -18, 24, -12, 16, -6, 8, -3, 0],
-        y:       [0, -10,  4, -7,   3,  -4,  2, -2,  1,  0, 0],
-        scale:   [1, 1.18, 0.93, 1.12, 0.96, 1.07, 0.98, 1.04, 0.99, 1.01, 1],
-      } : { rotate: 0, y: 0, scale: 1 }}
-      transition={{ duration: 1.5, ease: "easeOut" }}
-      whileHover={!isRolling ? { scale: 1.05 } : {}}
       className="flex items-center gap-3 px-6 py-3 rounded-xl border-2 border-primary/30 bg-card text-primary font-display tracking-wider text-sm hover:border-primary hover:bg-primary/10 transition-colors duration-200 min-h-[48px] disabled:opacity-70 disabled:cursor-not-allowed"
     >
-      <D20Face num={displayNum} />
+      <D20Face num={displayNum} isRolling={isRolling} />
       {isRolling ? 'Rolling...' : 'Roll a Name'}
-    </motion.button>
+    </button>
   );
 }
 
