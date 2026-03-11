@@ -8,41 +8,47 @@ import { cn } from '@/lib/utils';
 import { useCharacters } from '@/hooks/use-characters';
 
 function D20Face({ num }: { num: number }) {
+  // Outer hexagon vertices (die silhouette):
+  //   T(32,3)  TR(57,17)  BR(57,47)  B(32,61)  BL(7,47)  TL(7,17)
+  // Inner triangle (front face, centroid at 32,34):
+  //   iT(32,16)  iL(16,43)  iR(48,43)
+  // All 10 visible icosahedral faces are drawn individually so the
+  // front face sits perfectly centred and the shading reads as 3-D.
   return (
     <svg
       viewBox="0 0 64 64"
       fill="none"
-      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       className="w-12 h-12 shrink-0"
       aria-hidden="true"
     >
-      {/* Outer die body */}
+      {/* ── Surrounding facets (shaded to simulate upper-left lighting) ── */}
+      <polygon points="32,3  7,17  32,16"        fill="rgba(234,179,8,0.17)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="32,3  32,16 57,17"        fill="rgba(234,179,8,0.13)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="7,17  32,16 16,43"        fill="rgba(234,179,8,0.15)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="57,17 48,43 32,16"        fill="rgba(234,179,8,0.11)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="7,17  7,47  16,43"        fill="rgba(234,179,8,0.09)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="57,17 57,47 48,43"        fill="rgba(234,179,8,0.10)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="7,47  32,61 16,43"        fill="rgba(234,179,8,0.06)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="16,43 32,61 48,43"        fill="rgba(234,179,8,0.05)" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="57,47 48,43 32,61"        fill="rgba(234,179,8,0.07)" stroke="currentColor" strokeWidth="1.5" />
+
+      {/* ── Centre front face — highlighted, number lives here ── */}
       <polygon
-        points="32,3 57,17 57,47 32,61 7,47 7,17"
+        points="32,16 16,43 48,43"
+        fill="rgba(234,179,8,0.28)"
+        stroke="currentColor"
         strokeWidth="2"
-        fill="rgba(234,179,8,0.08)"
       />
-      {/* Top highlighted face — where the number lives */}
-      <polygon
-        points="32,3 57,17 7,17"
-        strokeWidth="1.5"
-        fill="rgba(234,179,8,0.18)"
-      />
-      {/* Face division lines — creates the icosahedral look */}
-      <line x1="32" y1="3"  x2="32" y2="61" strokeWidth="1"   strokeOpacity="0.45" />
-      <line x1="7"  y1="17" x2="57" y2="47" strokeWidth="1"   strokeOpacity="0.45" />
-      <line x1="57" y1="17" x2="7"  y2="47" strokeWidth="1"   strokeOpacity="0.45" />
-      <line x1="7"  y1="17" x2="7"  y2="47" strokeWidth="1.5" strokeOpacity="0.3"  />
-      <line x1="57" y1="17" x2="57" y2="47" strokeWidth="1.5" strokeOpacity="0.3"  />
-      {/* Number on the top face */}
+
+      {/* ── Number, centred at the centroid of the front face (32, 34) ── */}
       <text
         x="32"
-        y="15"
+        y="34"
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize={num >= 10 ? "10" : "11"}
+        fontSize={num >= 10 ? "11" : "13"}
         fontWeight="bold"
         fontFamily="Georgia, serif"
         fill="currentColor"
