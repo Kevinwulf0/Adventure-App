@@ -109,6 +109,76 @@ function D20Button({ onRoll }: { onRoll: (name: string) => void }) {
   );
 }
 
+interface NameQuote {
+  text: string;
+  source: string;
+  work: string;
+  year: number;
+}
+
+const NAME_QUOTES: NameQuote[] = [
+  {
+    text: "Words are pale shadows of forgotten names. As names have power, words have power. Words can light fires in the minds of men.",
+    source: "Patrick Rothfuss",
+    work: "The Name of the Wind",
+    year: 2007,
+  },
+  {
+    text: "Fear of a name increases fear of the thing itself.",
+    source: "J.K. Rowling",
+    work: "Harry Potter and the Philosopher's Stone",
+    year: 1997,
+  },
+  {
+    text: "Not all those who wander are lost.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
+  },
+  {
+    text: "To light a candle is to cast a shadow.",
+    source: "Ursula K. Le Guin",
+    work: "A Wizard of Earthsea",
+    year: 1968,
+  },
+  {
+    text: "All we have to decide is what to do with the time that is given us.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
+  },
+  {
+    text: "A reader lives a thousand lives before he dies. The man who never reads lives only one.",
+    source: "George R.R. Martin",
+    work: "A Dance with Dragons",
+    year: 2011,
+  },
+  {
+    text: "My name is Kvothe. I have stolen princesses back from sleeping barrow kings. I burned down the town of Trebon. I have spent the night with Felurian and left with my sanity and my life.",
+    source: "Patrick Rothfuss",
+    work: "The Name of the Wind",
+    year: 2007,
+  },
+  {
+    text: "In a hole in the ground there lived a hobbit. Not a nasty, dirty, wet hole — it was a hobbit-hole, and that means comfort.",
+    source: "J.R.R. Tolkien",
+    work: "The Hobbit",
+    year: 1937,
+  },
+  {
+    text: "Some day you will be old enough to start reading fairy tales again.",
+    source: "C.S. Lewis",
+    work: "Dedication, The Lion, the Witch and the Wardrobe",
+    year: 1950,
+  },
+  {
+    text: "Even the smallest person can change the course of the future.",
+    source: "J.R.R. Tolkien",
+    work: "The Fellowship of the Ring",
+    year: 1954,
+  },
+];
+
 const FANTASY_NAMES = [
   'Aelindra', 'Aethos', 'Aldric', 'Arannis', 'Aravel', 'Ardyn', 'Arindel', 'Aurelion',
   'Baelindra', 'Baern', 'Balasar', 'Belegorn', 'Bryndis', 'Caldris',
@@ -192,6 +262,7 @@ export default function WizardForm({ mode }: WizardFormProps) {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const [name, setName] = useState('');
+  const [quote] = useState<NameQuote>(() => NAME_QUOTES[Math.floor(Math.random() * NAME_QUOTES.length)]);
   const [race, setRace] = useState('');
   const [customRace, setCustomRace] = useState('');
   const [charClass, setCharClass] = useState('');
@@ -256,9 +327,16 @@ export default function WizardForm({ mode }: WizardFormProps) {
       case 0:
         return (
           <div className="space-y-6">
-            <p className="text-muted-foreground text-lg italic text-center mb-8">
-              "Every great saga begins with a name spoken into the void."
-            </p>
+            <div className="text-center mb-8 px-2">
+              <p className="text-muted-foreground text-base italic leading-relaxed mb-3">
+                "{quote.text}"
+              </p>
+              <p className="text-primary/50 text-xs font-display tracking-wider">
+                — {quote.source},{' '}
+                <span className="italic">{quote.work}</span>{' '}
+                ({quote.year})
+              </p>
+            </div>
             <input
               type="text"
               value={name}
