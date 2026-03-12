@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CharacterMode, PowerLevel, generateStats, generateBackstory, generatePortraitUrl, Character } from '@/lib/dnd-engine';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowLeft, Wand2, Sparkles, PenLine } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Wand2, Sparkles, PenLine, X, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCharacters } from '@/hooks/use-characters';
 
@@ -1142,6 +1142,998 @@ const RACE_FACTS: RaceFact[] = [
 
 const CLASSES = ['Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk', 'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard'];
 
+interface RaceData {
+  description: string;
+  source: string;
+  size: string;
+  speed: string;
+  abilityScores: string;
+  traits: { name: string; desc: string }[];
+  languages: string;
+  subraces?: string;
+}
+
+const RACE_INFO: Record<string, RaceData> = {
+  'Aarakocra': {
+    description: "Aarakocra are bird-folk native to the Elemental Plane of Air. Tall, slender, and feathered with wings capable of true flight, they serve as scouts and messengers for the Wind Dukes of Aaqa. They are deeply spiritual, valuing freedom and the open sky above all else.",
+    source: "Elemental Evil Player's Companion (2015); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "25 ft, Fly 50 ft",
+    abilityScores: "+2 Dexterity, +1 Wisdom (original); any +2/+1 (2022 revision)",
+    traits: [
+      { name: "Flight", desc: "You have a flying speed of 50 feet. You can't fly wearing medium or heavy armor." },
+      { name: "Talons", desc: "Your talons are natural weapons dealing 1d4 slashing damage on a hit." },
+      { name: "Wind Caller (2022)", desc: "Starting at 3rd level, you can cast Gust of Wind once per long rest using Wisdom as your spellcasting ability." },
+    ],
+    languages: "Common, Aarakocra, Auran",
+  },
+  'Aasimar': {
+    description: "Aasimar carry a spark of celestial light within them, born from a distant divine lineage or a blessing granted by a good-aligned deity. Each aasimar is guided by a celestial spirit who communicates through dreams. They walk the line between the mortal and the divine.",
+    source: "Volo's Guide to Monsters (2016); Player's Handbook (2024)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Charisma, +1 Wisdom (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "You can see in dim light within 60 feet as if it were bright light, and in darkness as if it were dim light." },
+      { name: "Celestial Resistance", desc: "You have resistance to necrotic damage and radiant damage." },
+      { name: "Healing Hands", desc: "As an action, you can touch a creature and cause it to regain hit points equal to your level. Once per long rest." },
+      { name: "Light Bearer", desc: "You know the Light cantrip." },
+      { name: "Celestial Revelation", desc: "At 3rd level you can transform: Radiant Soul (fly speed, radiant damage bonus), Necrotic Shroud (frighten enemies), or Radiant Consumption (area radiant damage). Once per long rest." },
+    ],
+    languages: "Common, Celestial",
+  },
+  'Astral Elf': {
+    description: "Astral Elves left the Material Plane for the Astral Sea long ago. In that timeless silver void, they have spent centuries—or millennia—in contemplation, their memories stretching back further than most mortals can comprehend. They are serene, distant, and occasionally unsettling.",
+    source: "Spelljammer: Adventures in Space (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Darkvision", desc: "60 feet of darkvision." },
+      { name: "Fey Ancestry", desc: "Advantage on saving throws against being charmed, and magic can't put you to sleep." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Astral Fire", desc: "You know one of the following cantrips: Dancing Lights, Light, or Sacred Flame." },
+      { name: "Radiant Soul", desc: "When you deal damage with Astral Fire cantrip, you can add your proficiency bonus to the damage once per turn." },
+      { name: "Trance", desc: "You don't need to sleep, but trance for 4 hours instead of sleeping 8. You gain proficiency in a weapon or tool during each trance." },
+    ],
+    languages: "Common, Elvish, one extra",
+  },
+  'Autognome': {
+    description: "Autognomes are clockwork constructs built by rock gnomes, yet imbued with true sapience. Some were built as servants and gained independence; others were created as companions. They combine mechanical precision with gnomish curiosity, exploring the cosmos on their own terms.",
+    source: "Spelljammer: Adventures in Space (2022)",
+    size: "Small", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Armored Casing", desc: "Your base AC is 13 + your Dexterity modifier. You can't wear armor, but a Shield still works." },
+      { name: "Built for Success", desc: "You can add a d4 to one attack roll, ability check, or saving throw per short or long rest." },
+      { name: "Healing Machine", desc: "If the Mending spell is cast on you, you can regain 2d6 hit points." },
+      { name: "Mechanical Nature", desc: "You have resistance to poison, immunity to disease, don't need to eat/drink/breathe, and advantage on saves vs. exhaustion and being poisoned." },
+      { name: "Sentry's Rest", desc: "You enter an inactive state for 6 hours each day instead of sleeping." },
+      { name: "Specialized Design", desc: "You gain one tool proficiency and one skill proficiency of your choice." },
+    ],
+    languages: "Common, Gnomish, one extra",
+  },
+  'Bugbear': {
+    description: "Bugbears are the fearsome cousins of goblins and hobgoblins, large and powerful predators built for the ambush. Despite their brutish appearance, bugbears possess a cunning patience, content to lurk in shadow for hours before striking with devastating force.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Strength, +1 Dexterity (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Long-Limbed", desc: "Your melee attacks have an additional 5-foot reach." },
+      { name: "Powerful Build", desc: "You count as one size larger for carrying capacity and for push/drag/lift." },
+      { name: "Sneaky", desc: "Proficiency in the Stealth skill." },
+      { name: "Surprise Attack", desc: "If you hit a creature that hasn't taken a turn in combat yet, it takes an extra 2d6 damage from the attack." },
+    ],
+    languages: "Common, Goblin",
+  },
+  'Centaur': {
+    description: "Centaurs are proud, noble creatures with the upper body of a humanoid and the lower body of a horse. In Theros they serve as messengers of the wild goddess Nylea; in Ravnica they inhabit the Gruul wilds. Their culture values community, oral tradition, and physical excellence.",
+    source: "Guildmaster's Guide to Ravnica (2018); Mythic Odysseys of Theros (2020)",
+    size: "Medium (counts as Large for carrying)", speed: "40 ft",
+    abilityScores: "+2 Strength, +1 Wisdom (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Charge", desc: "If you move at least 30 feet in a straight line toward a target and then hit it with a melee weapon attack, you deal an extra 1d6 damage." },
+      { name: "Hooves", desc: "Your hooves are natural weapons dealing 1d6 bludgeoning damage." },
+      { name: "Equine Build", desc: "You count as Large for carrying capacity. You have disadvantage on climbing checks; your jump distance is halved." },
+      { name: "Survivor", desc: "Proficiency in Survival." },
+      { name: "Natural Affinity", desc: "Proficiency in Animal Handling or Nature." },
+    ],
+    languages: "Common, Sylvan",
+  },
+  'Changeling': {
+    description: "Changelings are the children of doppelgangers and humanoids who inherited the ability to shift their appearance at will. In Eberron, they live on the edges of society, adopting new faces as easily as most folk change clothes. Their true face is a blank, neutral slate.",
+    source: "Eberron: Rising from the Last War (2019); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Charisma, +1 to one other (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Shapechanger", desc: "As an action, you alter your appearance: height (within 1 foot), weight (within 50 lbs.), facial features, hair, eye color, and voice. Equipment is unchanged. A DC 18 Insight check pierces the disguise." },
+      { name: "Changeling Instincts", desc: "Proficiency in two skills chosen from Deception, Insight, Intimidation, and Persuasion." },
+      { name: "Unsettling Visage (2022)", desc: "When a creature hits you with an attack, you can use your reaction to impose disadvantage on that attack roll. Once per short rest." },
+    ],
+    languages: "Common, two others",
+  },
+  'Deep Gnome': {
+    description: "Svirfneblin, or deep gnomes, are a secretive and wary subspecies of gnome who make their home in the sunless depths of the Underdark. Their stone-grey skin and cautious nature reflect thousands of years of survival amid drow, duergar, and mind flayers.",
+    source: "Elemental Evil Player's Companion (2015); Mordenkainen's Tome of Foes (2018)",
+    size: "Small", speed: "25 ft",
+    abilityScores: "+2 Intelligence, +1 Dexterity (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "120 feet — superior vision adapted to absolute Underdark darkness." },
+      { name: "Gnome Cunning", desc: "Advantage on Intelligence, Wisdom, and Charisma saving throws against magic." },
+      { name: "Stone Camouflage", desc: "Advantage on Dexterity (Stealth) checks when hiding in rocky or earthen terrain." },
+      { name: "Svirfneblin Magic", desc: "You can cast Nondetection on yourself at will. You can also cast Blindness/Deafness, Blur, and Disguise Self, each once per long rest." },
+    ],
+    languages: "Gnomish, Terran, Undercommon",
+  },
+  'Dhampir': {
+    description: "Dhampirs are mortals with vampiric heritage — not fully turned, but permanently marked by the undead curse. They exist on the threshold between life and death, possessing some vampiric gifts without the full curse. Many struggle with their predatory instincts.",
+    source: "Van Richten's Guide to Ravenloft (2021)",
+    size: "Medium or Small", speed: "35 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Deathless Nature", desc: "You don't need to eat or breathe. You have advantage on saves to avoid exhaustion. You can climb at full speed, including upside-down, as per Spider Climb." },
+      { name: "Spider Climb", desc: "You have a climbing speed equal to your walking speed, and you can climb on ceilings and vertical surfaces." },
+      { name: "Vampiric Bite", desc: "Your fangs are a natural weapon (1d4 piercing). When you bite, you can choose to heal yourself for damage dealt (PB/day uses total)." },
+    ],
+    languages: "Common, one other",
+  },
+  'Dragonborn': {
+    description: "Dragonborn are proud, honor-driven humanoids who trace their lineage to dragons. Whether through draconic magic, divine blessing, or ancient breeding, they carry the essence of dragonkind — including a potent breath weapon tied to their draconic ancestry.",
+    source: "Player's Handbook (2014); Fizban's Treasury of Dragons (2021)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Strength, +1 Charisma (standard); varies by subtype in Fizban's",
+    traits: [
+      { name: "Draconic Ancestry", desc: "Choose one dragon type: Acid (Black/Copper), Lightning (Blue/Bronze), Fire (Gold/Red), Poison (Green), Cold (Silver/White). Determines breath weapon damage type and resistance." },
+      { name: "Breath Weapon", desc: "Exhale a blast of energy as an action. The size and shape depend on ancestry (15-ft cone or 30-ft line). Damage is 2d6 (increasing to 3d6 at 6th, 4d6 at 11th, 5d6 at 16th). Constitution save for half (DC = 8 + Con + PB)." },
+      { name: "Damage Resistance", desc: "Resistance to the damage type of your draconic ancestry." },
+      { name: "Darkvision (Gem/Chromatic/Metallic)", desc: "Fizban's variants each add unique traits: Gem Dragonborn gain psionic flight; Metallic gain a second breath option; Chromatic gain an aura." },
+    ],
+    languages: "Common, Draconic",
+  },
+  'Drow': {
+    description: "Dark elves, or drow, were driven underground eons ago after being cursed by the elf god Corellon for worshipping Lolth, the Spider Queen. They built a vast empire in the Underdark, ruled by cunning matriarchal priestesses. Though most drow serve Lolth's cruel designs, some — like the legendary Drizzt Do'Urden — escape their culture's darkness.",
+    source: "Player's Handbook (2014); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Dexterity, +1 Charisma (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Superior Darkvision", desc: "120 feet — double the standard elven range, refined over millennia in lightless depths." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Ancestry", desc: "Advantage on saves against charm; can't be magically put to sleep." },
+      { name: "Trance", desc: "4 hours of meditative rest instead of 8 hours of sleep." },
+      { name: "Drow Magic", desc: "You know Dancing Lights at will. At 3rd level, you can cast Faerie Fire once per long rest. At 5th level, you can cast Darkness once per long rest. Charisma is your spellcasting ability." },
+      { name: "Sunlight Sensitivity (pre-2022)", desc: "Disadvantage on attack rolls and Perception checks relying on sight when you or your target is in direct sunlight. Removed in 2022 revision." },
+    ],
+    languages: "Common, Elvish, Undercommon",
+  },
+  'Duergar': {
+    description: "Gray dwarves, or duergar, were enslaved by mind flayers deep in the Underdark for thousands of years. Through that harrowing captivity they developed psionic abilities and an iron will. They are grim, industrious, and deeply suspicious of outsiders — but formidably resilient.",
+    source: "Sword Coast Adventurer's Guide (2015); Mordenkainen's Tome of Foes (2018)",
+    size: "Medium", speed: "25 ft",
+    abilityScores: "+2 Constitution, +1 Strength (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Superior Darkvision", desc: "120 feet." },
+      { name: "Duergar Resilience", desc: "Advantage on saving throws against illusions and against being charmed or paralyzed." },
+      { name: "Duergar Magic", desc: "At 3rd level: Enlarge/Reduce (self only, Enlarge version). At 5th level: Invisibility (self only). Each once per long rest. Intelligence is the spellcasting ability." },
+      { name: "Sunlight Sensitivity (pre-2022)", desc: "Disadvantage on attacks and sight-based Perception checks in direct sunlight." },
+      { name: "Stonecunning", desc: "Advantage on Intelligence (History) checks related to stonework." },
+      { name: "Dwarven Resilience", desc: "Advantage on saves against poison; resistance to poison damage." },
+    ],
+    languages: "Common, Dwarvish, Undercommon",
+  },
+  'Dwarf': {
+    description: "Dwarves are stout, hardy folk who emerged from the earth itself, shaped by their god Moradin at the heart of the world. They are known for their craftsmanship, their stubbornness, and their legendary grudge-keeping. Hill and Mountain dwarves are the two primary subraces.",
+    source: "Player's Handbook (2014)",
+    size: "Medium", speed: "25 ft (not reduced by armor)",
+    abilityScores: "+2 Constitution; Hill Dwarf: +1 Wisdom; Mountain Dwarf: +2 Strength",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Dwarven Resilience", desc: "Advantage on saves against poison; resistance to poison damage." },
+      { name: "Dwarven Combat Training", desc: "Proficiency in battleaxe, handaxe, light hammer, and warhammer." },
+      { name: "Tool Proficiency", desc: "Proficiency in smith's tools, brewer's supplies, or mason's tools." },
+      { name: "Stonecunning", desc: "Advantage on Intelligence (History) checks related to the origin of stonework." },
+      { name: "Hill Dwarf: Dwarven Toughness", desc: "Your hit point maximum increases by 1 and increases by 1 every time you gain a level." },
+      { name: "Mountain Dwarf: Armor Training", desc: "Proficiency with light and medium armor." },
+    ],
+    languages: "Common, Dwarvish",
+  },
+  'Eladrin': {
+    description: "Eladrin are high elves of the Feywild who have become more fey than mortal over the long centuries. They embody the four seasons — Spring, Summer, Autumn, and Winter — with their personality and alignment shifting as the seasons change. Their emotions are intense, mercurial, and deeply tied to nature's cycles.",
+    source: "Mordenkainen's Tome of Foes (2018); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Dexterity, +1 Intelligence (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Fey Ancestry", desc: "Advantage on saves against charm; can't be magically slept." },
+      { name: "Trance", desc: "4-hour meditative rest." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Step", desc: "Teleport up to 30 feet as a bonus action once per short or long rest. Seasonal bonus: Spring = charm a creature; Summer = deal fire damage to nearby creatures; Autumn = frighten a creature; Winter = impose disadvantage on next attack roll." },
+    ],
+    languages: "Common, Elvish",
+  },
+  'Elf': {
+    description: "Elves are graceful, long-lived beings who see themselves as caretakers of the world. They are the children of the god Corellon and spend their long lives pursuing mastery of art, magic, or war. Their Reverie — a 4-hour meditative trance — lets them relive centuries of memory in place of sleep.",
+    source: "Player's Handbook (2014)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Dexterity; subrace adds more",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Ancestry", desc: "Advantage on saves against charm; magic can't put you to sleep." },
+      { name: "Trance", desc: "You don't need to sleep. Instead, you meditate deeply for 4 hours a day." },
+      { name: "Elf Weapon Training", desc: "Proficiency in longsword, shortsword, shortbow, and longbow (Wood and High Elf)." },
+    ],
+    languages: "Common, Elvish",
+    subraces: "High Elf, Wood Elf, Drow — each with distinct traits and ability bonuses",
+  },
+  'Fairy': {
+    description: "Fairies are tiny, winged fey native to the Feywild. Capricious and curious by nature, they wander the multiverse following whims that mortal folk find utterly bewildering. Despite their small stature, fairies possess potent innate magic and the rare gift of natural flight.",
+    source: "The Wild Beyond the Witchlight (2021)",
+    size: "Small", speed: "30 ft, Fly 30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Flight", desc: "You have a flying speed of 30 feet." },
+      { name: "Fairy Magic", desc: "You know the Druidcraft cantrip. At 3rd level, you can cast Faerie Fire once per long rest. At 5th level, you can cast Enlarge/Reduce once per long rest. Intelligence, Wisdom, or Charisma is your spellcasting ability (your choice)." },
+    ],
+    languages: "Common, Sylvan",
+  },
+  'Firbolg': {
+    description: "Firbolgs are giant-kin who live as reclusive forest guardians, preferring the company of trees and animals to humanoid civilization. Deeply connected to nature and notoriously indirect in speech — they believe speaking names aloud grants enemies power over you — firbolgs make wise, patient, and surprisingly powerful adventurers.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Wisdom, +1 Strength (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Firbolg Magic", desc: "You can cast Detect Magic and Disguise Self (appearing as any Medium humanoid) once per short rest each. Wisdom is your spellcasting ability." },
+      { name: "Hidden Step", desc: "As a bonus action, turn invisible until the start of your next turn or until you attack, make a check, or cast a spell. Once per short rest." },
+      { name: "Powerful Build", desc: "Counts as one size larger for carrying capacity and push/drag/lift." },
+      { name: "Speech of Beast and Leaf", desc: "You can communicate simple concepts to beasts and plants." },
+    ],
+    languages: "Common, Elvish, Giant",
+  },
+  'Genasi': {
+    description: "Genasi are mortals born with the power of the Elemental Planes running through their blood, usually the result of a union with a genie ancestor. Depending on which plane touched their lineage, genasi exhibit the traits of Air, Earth, Fire, or Water — each subrace being its own distinct expression of elemental power.",
+    source: "Elemental Evil Player's Companion (2015); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft (Water Genasi: +Swim 30 ft)",
+    abilityScores: "+2 Constitution; subrace adds more",
+    traits: [
+      { name: "Air Genasi", desc: "Con +2, Dex +1. Can hold breath indefinitely. Know Shocking Grasp. At 3rd: Feather Fall. At 5th: Levitate (once per long rest). Speed includes levitation." },
+      { name: "Earth Genasi", desc: "Con +2, Str +1. Can move through nonmagical difficult terrain (stone/earth/sand) at no extra cost. Know Blade Ward. At 3rd: Enlarge/Reduce. At 5th: Passwall (once per long rest)." },
+      { name: "Fire Genasi", desc: "Con +2, Int +1. Darkvision 60 ft. Fire resistance. Know Fire Bolt. At 3rd: Burning Hands. At 5th: Flame Blade (once per long rest)." },
+      { name: "Water Genasi", desc: "Con +2, Wis +1. Amphibious. Swim speed 30 ft. Know Acid Splash. At 3rd: Create or Destroy Water. At 5th: Water Walk (once per long rest)." },
+    ],
+    languages: "Common, Primordial",
+  },
+  'Giff': {
+    description: "Giff are portly, hippopotamus-headed mercenaries from the Spelljammer setting. They are obsessed with weapons, rank, and military protocol, and are renowned across the stars as some of the most dangerous and reliable soldiers in the multiverse. They're also surprisingly fond of explosives.",
+    source: "Spelljammer: Adventures in Space (2022)",
+    size: "Medium", speed: "30 ft, Swim 30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Astral Spark", desc: "You have advantage on Intelligence, Wisdom, and Charisma saving throws." },
+      { name: "Hippogriff Charge", desc: "Immediately after using the Dash action, you can make one melee weapon attack as a bonus action, if you moved at least 20 feet this turn. On a hit, you deal an extra 2d6 damage." },
+      { name: "Firearms Specialist (optional)", desc: "You are proficient with firearms (if your campaign uses them)." },
+    ],
+    languages: "Common",
+  },
+  'Githyanki': {
+    description: "Githyanki are a race of psionic warriors from the Astral Plane who cast off the enslavement of mind flayers in a heroic uprising led by the warrior Gith. Now they raid other planes from their astral citadels, serving their undying lich-queen Vlaakith and seeking ever-greater martial power.",
+    source: "Mordenkainen's Tome of Foes (2018); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Strength, +1 Intelligence (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Astral Knowledge", desc: "Gain proficiency in any one skill at the end of each long rest (changes each rest)." },
+      { name: "Githyanki Psionics", desc: "Know Mage Hand (invisible hand). At 3rd: Jump once per long rest. At 5th: Misty Step once per long rest. Intelligence is the spellcasting ability." },
+      { name: "Psychic Resilience (2022)", desc: "Proficiency in Perception and one other skill. Advantage on saves against being frightened." },
+      { name: "Astral Traveler", desc: "You can cast Astral Projection once per long rest (at higher levels, varies by source)." },
+    ],
+    languages: "Common, Gith",
+  },
+  'Githzerai': {
+    description: "Githzerai are the philosopher-monks of the gith race, who after the revolution split from the militaristic githyanki and retreated to Limbo. Through sheer mental discipline they carve out stable monasteries in the plane of pure chaos. They value inner peace, self-mastery, and detachment from material concerns.",
+    source: "Mordenkainen's Tome of Foes (2018); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Wisdom, +1 Intelligence (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Mental Discipline", desc: "Advantage on saving throws against the charmed and frightened conditions." },
+      { name: "Githzerai Psionics", desc: "Know Mage Hand (invisible hand). At 3rd: Shield once per long rest. At 5th: Detect Thoughts once per long rest. Wisdom is the spellcasting ability." },
+      { name: "Psychic Resilience", desc: "Advantage on saves vs. charmed and frightened." },
+    ],
+    languages: "Common, Gith",
+  },
+  'Gnome': {
+    description: "Gnomes are small, clever, quick-witted folk with an insatiable curiosity about the world. Forest gnomes commune with animals and cast minor illusions; rock gnomes build brilliant mechanical devices. All gnomes share a deep ancestral resistance to magic — their minds simply don't accept unwanted interference.",
+    source: "Player's Handbook (2014)",
+    size: "Small", speed: "25 ft",
+    abilityScores: "+2 Intelligence; Forest: +1 Dexterity; Rock: +1 Constitution",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Gnome Cunning", desc: "Advantage on all Intelligence, Wisdom, and Charisma saves against magic." },
+      { name: "Forest Gnome: Natural Illusionist", desc: "You know the Minor Illusion cantrip." },
+      { name: "Forest Gnome: Speak with Small Beasts", desc: "You can communicate simple ideas with Small or smaller beasts." },
+      { name: "Rock Gnome: Artificer's Lore", desc: "+2 bonus on Intelligence (History) checks related to magical, alchemical, or technological items." },
+      { name: "Rock Gnome: Tinker", desc: "Using tinker's tools, construct tiny clockwork devices (a fire starter, music box, or bug) that last 24 hours." },
+    ],
+    languages: "Common, Gnomish",
+  },
+  'Goblin': {
+    description: "Goblins are small, shrewd, and surprisingly resilient — the most widespread humanoid race in the monster manuals of every D&D edition. Player character goblins are opportunistic survivors who have learned to use their size and cunning to more-than-compensate for their lack of raw power.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Small", speed: "30 ft",
+    abilityScores: "+2 Dexterity, +1 Constitution (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Fury of the Small", desc: "Once per short rest, deal extra damage equal to your level when you hit a creature larger than yourself." },
+      { name: "Nimble Escape", desc: "You can take the Disengage or Hide action as a bonus action on each of your turns." },
+    ],
+    languages: "Common, Goblin",
+  },
+  'Goliath': {
+    description: "Goliaths are towering, stone-skinned nomads who roam the highest mountain peaks, competing in constant tests of strength, endurance, and skill. Their culture demands absolute fairness — any advantage taken through trickery is the deepest dishonor. They descended from ancient giants, and that heritage shows in their power.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Strength, +1 Constitution (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Stone's Endurance", desc: "When you take damage, use your reaction to roll 1d12 + your Constitution modifier and reduce the damage by that total. Once per short or long rest." },
+      { name: "Powerful Build", desc: "You count as one size larger for carrying capacity and push/drag/lift." },
+      { name: "Mountain Born", desc: "Adapted to high altitude and cold climates; resistance to cold damage." },
+      { name: "Natural Athlete", desc: "Proficiency in Athletics." },
+    ],
+    languages: "Common, Giant",
+  },
+  'Grung': {
+    description: "Grungs are small, brightly colored frog-folk from the jungles of the Forgotten Realms. Their skin secretes a natural toxin that poisons any creature that touches them. Their society is rigidly hierarchical — color determines caste, from common green warriors to the rare golden royalty.",
+    source: "One Grung Above (2017, DM's Guild)",
+    size: "Small", speed: "25 ft, Climb 25 ft",
+    abilityScores: "+2 Dexterity, +1 Constitution",
+    traits: [
+      { name: "Amphibious", desc: "You can breathe air and water." },
+      { name: "Poisonous Skin", desc: "Any creature that touches you or hits you with a melee attack while within 5 feet must make a DC 12 Con save or be poisoned for 1 minute." },
+      { name: "Standing Leap", desc: "Long jump up to 25 feet and high jump up to 15 feet with or without a running start." },
+      { name: "Water Dependency", desc: "You must submerge in water for at least 1 hour per day or gain one level of exhaustion." },
+    ],
+    languages: "Grung",
+  },
+  'Hadozee': {
+    description: "Hadozee are spacefaring simians from the Spelljammer setting, using the patagia (skin membranes) stretched between their limbs to glide between masts and decks of spelljammer ships. They are an adventurous, sociable people who entered the wider multiverse after a fateful bargain with a wizard.",
+    source: "Spelljammer: Adventures in Space (2022)",
+    size: "Medium", speed: "30 ft, Climb 30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Dexterous Feet", desc: "You can take the Use an Object action as a bonus action." },
+      { name: "Glide", desc: "When you fall, you can use your reaction to spread your patagia and glide. Descend at 60 ft/round, moving horizontally 5 ft for every 1 ft dropped. No fall damage if landing safely." },
+      { name: "Hadozee Resilience", desc: "Once per long rest, when you take damage, reduce it by 1d6 + your Constitution modifier (minimum 0)." },
+    ],
+    languages: "Common",
+  },
+  'Half-Elf': {
+    description: "Half-elves carry the dual heritage of human and elf, belonging fully to neither world. They have the elves' grace, the humans' ambition, and a lifetime of navigating a world that sees them as 'other.' This outsider perspective often makes them uncommonly perceptive and diplomatically skilled.",
+    source: "Player's Handbook (2014)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Charisma, +1 to two different ability scores of your choice",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Fey Ancestry", desc: "Advantage on saves vs. charm; can't be magically slept." },
+      { name: "Skill Versatility", desc: "Proficiency in two skills of your choice." },
+    ],
+    languages: "Common, Elvish, one extra",
+    subraces: "Variant Half-Elves from Sword Coast Adventurer's Guide replace Skill Versatility with an elf subrace trait (e.g., Drow Magic, Wood Elf's Mask of the Wild, or Aquatic Elf's Swim speed).",
+  },
+  'Half-Orc': {
+    description: "Half-orcs combine orcish ferocity with human adaptability. Often born of violent circumstances, they face prejudice on both sides but can carve a powerful place for themselves through sheer resilience. Their orcish heritage grants them battle instincts that no training can replicate.",
+    source: "Player's Handbook (2014)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Strength, +1 Constitution",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Menacing", desc: "Proficiency in Intimidation." },
+      { name: "Relentless Endurance", desc: "When reduced to 0 hit points but not killed outright, drop to 1 hit point instead. Once per long rest." },
+      { name: "Savage Attacks", desc: "When you score a critical hit with a melee weapon attack, roll one of the weapon's damage dice one additional time and add it to the extra damage of the critical hit." },
+    ],
+    languages: "Common, Orc",
+  },
+  'Halfling': {
+    description: "Halflings are small, cheerful folk who value home, community, and a good meal above all else. Despite their peaceful inclinations, they have an uncanny ability to avoid trouble through sheer luck — a trait some attribute to divine blessing and others to simply being too small for fate to notice.",
+    source: "Player's Handbook (2014)",
+    size: "Small", speed: "25 ft",
+    abilityScores: "+2 Dexterity; Lightfoot: +1 Charisma; Stout: +1 Constitution",
+    traits: [
+      { name: "Lucky", desc: "When you roll a 1 on an attack roll, ability check, or saving throw, reroll and use the new roll." },
+      { name: "Brave", desc: "Advantage on saving throws against being frightened." },
+      { name: "Halfling Nimbleness", desc: "You can move through the space of any creature that is one size larger than you." },
+      { name: "Lightfoot: Naturally Stealthy", desc: "You can attempt to hide even when obscured only by a creature one size larger than you." },
+      { name: "Stout: Stout Resilience", desc: "Advantage on saves vs. poison; resistance to poison damage." },
+    ],
+    languages: "Common, Halfling",
+  },
+  'Harengon': {
+    description: "Harengon are rabbit-folk from the Feywild who have scattered across the planes following their restless curiosity. They carry the fey world's luck and reflexes with them, moving with an energy that reminds those who know them of a coiled spring always ready to release.",
+    source: "The Wild Beyond the Witchlight (2021)",
+    size: "Medium or Small", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Hare-Trigger", desc: "You can add your proficiency bonus to your Initiative rolls." },
+      { name: "Leporine Senses", desc: "Proficiency in Perception." },
+      { name: "Lucky Footwork", desc: "When you fail a Dexterity saving throw, you can use your reaction to add 1d4 to the save, potentially turning it into a success. Once per short or long rest." },
+      { name: "Rabbit Hop", desc: "As a bonus action, jump a number of feet equal to 5 times your proficiency bonus without provoking opportunity attacks. Once per short or long rest." },
+    ],
+    languages: "Common, Sylvan",
+  },
+  'Hexblood': {
+    description: "Hexbloods are mortals marked permanently by a hag's curse or bargain — not fully transformed into hags, but never quite what they were before. A streak of white hair, a strange eye color, or an uncanny silence around them announces their affliction. They walk between the world of the living and the world of dark fey magic.",
+    source: "Van Richten's Guide to Ravenloft (2021)",
+    size: "Medium or Small", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Eerie Token", desc: "As a magic action, create a Tiny object (hair, wart, nail) that stores a whispered message. A creature holding it can hear the message. Can also use it to cast Telepathic Message. Lasts until you finish a long rest." },
+      { name: "Hex Magic", desc: "You can cast Disguise Self and Hex each once per long rest. Hexblood level determines spellcasting ability." },
+      { name: "Witch's Mark", desc: "A streak of white in your hair, mismatched eyes, or another visible hag-mark. You can detect hags as if by Detect Evil and Good." },
+    ],
+    languages: "Common, one other",
+  },
+  'High Elf': {
+    description: "High elves are the most arcane of the elven subraces, born with an innate connection to magic that manifests as a wizard cantrip known from birth. They are graceful scholars and warriors who take pride in their ancient civilizations and their mastery of the arcane arts.",
+    source: "Player's Handbook (2014)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Dexterity, +1 Intelligence",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Ancestry", desc: "Advantage on saves vs. charm; can't be magically slept." },
+      { name: "Trance", desc: "4-hour meditative rest instead of sleep." },
+      { name: "Elf Weapon Training", desc: "Proficiency in longsword, shortsword, shortbow, and longbow." },
+      { name: "Cantrip", desc: "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it." },
+      { name: "Extra Language", desc: "You can speak, read, and write one extra language of your choice." },
+    ],
+    languages: "Common, Elvish, one extra",
+  },
+  'Hobgoblin': {
+    description: "Hobgoblins are the militaristic elite of the goblinoid family — disciplined, ambitious, and obsessed with conquest and rank. Their armies use real-world military tactics: supply lines, flanking maneuvers, siege weapons. Hobgoblin society is built entirely on martial excellence, and weakness of any kind is not tolerated.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Constitution, +1 Intelligence (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Martial Training", desc: "Proficiency in light armor and two martial weapons of your choice." },
+      { name: "Saving Face", desc: "When you miss an attack or fail an ability check, you can gain a bonus equal to the number of allies within 30 feet of you (max +5). Once per short rest." },
+    ],
+    languages: "Common, Goblin",
+  },
+  'Human': {
+    description: "Humans are the most widespread, ambitious, and adaptable species in the D&D multiverse. They have no innate magic, no centuries of refinement, and no divine patron who specifically shaped them — and yet they have built the greatest empires, the most enduring religions, and the most powerful spellcasting traditions in history.",
+    source: "Player's Handbook (2014)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+1 to all ability scores (Standard); or +1 to two scores + one feat (Variant)",
+    traits: [
+      { name: "Ability Score Increase", desc: "Standard: +1 to all six ability scores. Variant: +1 to two ability scores of your choice." },
+      { name: "Variant: Feat", desc: "You gain one feat of your choice. This makes Variant Human one of the most powerful level-1 character options in 5e." },
+      { name: "Variant: Skills", desc: "You gain proficiency in one skill of your choice." },
+      { name: "Extra Language", desc: "You speak, read, and write one additional language." },
+    ],
+    languages: "Common, one extra",
+  },
+  'Kalashtar': {
+    description: "Kalashtar are humans who long ago merged with quori — psychic spirits from Dal Quor, the plane of dreams, who were fleeing the tyranny of the Dreaming Dark. The two souls exist in a symbiosis: the quori spirit gives the kalashtar psionic gifts and dreamless rest; the mortal body gives the quori a refuge.",
+    source: "Eberron: Rising from the Last War (2019)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Wisdom, +1 Charisma (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Dual Mind", desc: "Advantage on Wisdom saving throws." },
+      { name: "Mental Discipline", desc: "Resistance to psychic damage." },
+      { name: "Mind Link", desc: "You can telepathically speak to any willing creature you can see within 60 feet. The target can respond if it has a language." },
+      { name: "Severed from Dreams", desc: "You don't dream. Spells and abilities affecting dreams have no effect on you." },
+    ],
+    languages: "Common, Quori, one extra",
+  },
+  'Kender': {
+    description: "Kender are the halfling-like people of the Dragonlance setting — fearless wanderers whose complete immunity to fear is not bravery but a genuine absence of the emotion. They 'handle' objects that interest them, a habit other races call theft but kender consider perfectly natural curiosity.",
+    source: "Dragonlance: Shadow of the Dragon Queen (2022)",
+    size: "Small", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Fearless", desc: "You have advantage on saving throws against being frightened." },
+      { name: "Kender Ace", desc: "Kender accumulate small items. Once per long rest, you can produce a small non-magical object from your pouch that would be useful in the current situation (DM determines exact item)." },
+      { name: "Taunt", desc: "As a bonus action, magically taunt a creature within 60 feet that can see and hear you. It must make a Wisdom save (DC = 8 + PB + Charisma) or has disadvantage on attack rolls against targets other than you until the end of your next turn." },
+    ],
+    languages: "Common",
+  },
+  'Kenku': {
+    description: "Kenku are corvid-like humanoids who once possessed wings and the gift of creative speech — both stripped away as divine punishment for attempting to steal from their god. They can only mimic sounds they have heard and speak in others' voices. They are drawn to urban underworlds where their mimicry and forgery skills are assets.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Dexterity, +1 Wisdom (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Expert Forgery", desc: "You can duplicate other creatures' handwriting and craftwork with advantage on any check made to produce a forgery or duplicate." },
+      { name: "Kenku Recall", desc: "Proficiency in two skills of your choice from the following: Acrobatics, Deception, Insight, Perception, Sleight of Hand, Stealth." },
+      { name: "Mimicry", desc: "You can precisely mimic any sound you have heard, including voices. Insight vs. Deception to detect the deception." },
+      { name: "No Original Voice (flavor)", desc: "Kenku cannot create original speech — every word they speak is a recorded sound from their experience." },
+    ],
+    languages: "Common, Auran (understand but cannot speak originally)",
+  },
+  'Kobold': {
+    description: "Kobolds are small, reptilian humanoids who worship dragons with fanatical devotion. They are the most numerous tunneling race in the Underdark, and their engineering skill with traps is legendary. Player character kobolds have traded much of their inherited cowardice for pack-hunting cunning.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Small", speed: "30 ft",
+    abilityScores: "+2 Dexterity, −2 Strength (original); any +2/+1, no penalty (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Draconic Cry", desc: "As a bonus action, you let out a draconic cry. Until the start of your next turn, you and your allies within 10 feet have advantage on attack rolls against any creature in range. Once per short rest." },
+      { name: "Kobold Legacy (2022)", desc: "Choose one: Defiance (advantage on saves vs frightened), Draconic Roar (as above), or Cunning Instinct (proficiency in Stealth, advantage on Stealth in dim light or darkness)." },
+      { name: "Pack Tactics (original, pre-2022)", desc: "Advantage on attacks against a creature if at least one of your allies is adjacent to the target and isn't incapacitated." },
+    ],
+    languages: "Common, Draconic",
+  },
+  'Leonin': {
+    description: "Leonin are proud, powerful lion-folk from the sun-drenched plain of Oreskos in the Theros setting. They are one of D&D's few races that actively reject the worship of gods, having been abandoned by their deity. They rely solely on each other, their pride, and their own considerable strength.",
+    source: "Mythic Odysseys of Theros (2020)",
+    size: "Medium", speed: "35 ft",
+    abilityScores: "+2 Constitution, +1 Strength (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Claws", desc: "Your claws are natural weapons dealing 1d4 slashing damage + Strength modifier." },
+      { name: "Hunter's Instincts", desc: "Proficiency in Perception, Survival, or Athletics (choose one)." },
+      { name: "Daunting Roar", desc: "As a bonus action, roar with fearsome intent. Each creature of your choice within 10 feet must succeed on a Wisdom save (DC 8 + PB + Con modifier) or be frightened of you until the end of your next turn. Once per short rest." },
+    ],
+    languages: "Common, Leonin",
+  },
+  'Lizardfolk': {
+    description: "Lizardfolk are cold-blooded, pragmatic reptilians who view the world through a lens of pure survival logic. They lack the emotional responses of warm-blooded races, approaching love, art, and grief with the same detached analysis they apply to hunting. They are not cruel — merely utterly literal.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft, Swim 30 ft",
+    abilityScores: "+2 Constitution, +1 Wisdom (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Bite", desc: "Your bite is a natural weapon dealing 1d6 + Strength modifier piercing damage. Bonus action bite after certain attacks." },
+      { name: "Cunning Artisan", desc: "Using a slain beast or plant, you can craft one of the following as part of a short rest: shield, club, javelin, or 1d4 darts/blowgun needles." },
+      { name: "Hold Breath", desc: "You can hold your breath for up to 15 minutes." },
+      { name: "Hunter's Lore", desc: "Proficiency in two of the following: Animal Handling, Nature, Perception, Stealth, or Survival." },
+      { name: "Natural Armor", desc: "When unarmored, your AC is 13 + your Dexterity modifier." },
+      { name: "Hungry Jaws", desc: "As a bonus action, bite a creature. On a hit, gain temporary hit points equal to your Constitution modifier (minimum 1). Once per short rest." },
+    ],
+    languages: "Common, Draconic",
+  },
+  'Locathah': {
+    description: "Locathah are fish-folk who once lived as slaves to the sahuagin, fighting for generations to win their freedom. Their entire culture is defined by that liberation — they are fierce, proud survivors who have built new societies on the seafloor, deeply suspicious of those who seek to dominate others.",
+    source: "Locathah Rising (2019)",
+    size: "Medium", speed: "30 ft, Swim 30 ft",
+    abilityScores: "+2 Strength, +1 Constitution",
+    traits: [
+      { name: "Leviathan Will", desc: "Advantage on saving throws against being charmed, frightened, paralyzed, poisoned, stunned, or unconscious." },
+      { name: "Natural Armor", desc: "When not wearing armor, AC = 12 + Dexterity modifier." },
+      { name: "Amphibious", desc: "You can breathe air and water." },
+    ],
+    languages: "Common, Aquan",
+  },
+  'Lotusden Halfling': {
+    description: "Lotusden Halflings hail from the Lotusden Greenwood of Wildemount, a vast and ancient forest. More wild than their city-dwelling cousins, Lotusden halflings have developed a deep bond with the living forest around them, learning to call upon its roots and growth as natural allies.",
+    source: "Explorer's Guide to Wildemount (2020)",
+    size: "Small", speed: "25 ft",
+    abilityScores: "+2 Dexterity, +1 Wisdom",
+    traits: [
+      { name: "Lucky", desc: "Reroll natural 1s on attack rolls, ability checks, and saving throws." },
+      { name: "Brave", desc: "Advantage on saves against fright." },
+      { name: "Halfling Nimbleness", desc: "Move through larger creatures' spaces." },
+      { name: "Child of the Wood", desc: "You know the Druidcraft cantrip. At 3rd level: Entangle (1/long rest). At 5th level: Spike Growth (1/long rest). Wisdom is your spellcasting ability." },
+      { name: "Timberwalk", desc: "Difficult terrain composed of non-magical plants and undergrowth doesn't slow your movement." },
+    ],
+    languages: "Common, Halfling",
+  },
+  'Loxodon': {
+    description: "Loxodon are humanoid elephants from the Ravnica setting — serene, patient, and powerfully built. Their culture values memory, community, and the slow accumulation of wisdom. A loxodon's trunk is both a sensory organ of remarkable precision and an extra-limb capable of delicate tasks.",
+    source: "Guildmaster's Guide to Ravnica (2018)",
+    size: "Large", speed: "30 ft",
+    abilityScores: "+2 Constitution, +1 Wisdom (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Powerful Build", desc: "Count as Large for carrying capacity." },
+      { name: "Loxodon Serenity", desc: "Advantage on saves against being frightened or charmed." },
+      { name: "Natural Armor", desc: "When unarmored: AC = 12 + Constitution modifier." },
+      { name: "Trunk", desc: "You can grasp objects weighing up to 400 lbs. with your trunk, or use it to perform simple tasks. Cannot use it to wield weapons. Also functions as a snorkel." },
+      { name: "Keen Smell", desc: "Advantage on Perception, History, and Investigation checks that rely on smell." },
+    ],
+    languages: "Common, Loxodon",
+  },
+  'Minotaur': {
+    description: "Minotaurs are bull-headed, powerfully built humanoids with a legendary sense of direction. In Theros they are associated with the god Mogis (violence) or Kord, though individuals vary widely. Player character minotaurs have traded savagery for martial discipline — though the horns remain.",
+    source: "Guildmaster's Guide to Ravnica (2018); Mythic Odysseys of Theros (2020)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Strength, +1 Constitution (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Horns", desc: "Natural weapon dealing 1d6 + Strength modifier piercing damage." },
+      { name: "Goring Rush", desc: "Immediately after using the Dash action, you can make one melee attack with your horns as a bonus action." },
+      { name: "Hammering Horns", desc: "After you hit a creature with a melee attack, push it back up to 10 feet (Strength save, DC 8 + PB + Strength). Once per turn." },
+      { name: "Imposing Presence", desc: "Proficiency in Intimidation or Persuasion (your choice)." },
+      { name: "Labyrinthine Recall", desc: "You can perfectly recall any path you have traveled." },
+    ],
+    languages: "Common",
+  },
+  'Orc': {
+    description: "Orcs in 5e (post-2021) are presented as a fully neutral player race — powerful, driven, and formidable warriors whose reputation for violence is a cultural legacy rather than an inherent trait. They are devoted to Gruumsh, the one-eyed god, but individual orcs can follow any path.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Strength, +1 Constitution (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Adrenaline Rush", desc: "You can take the Dash action as a bonus action. When you do, gain temporary HP equal to your proficiency bonus. Can use this a number of times equal to your proficiency bonus per long rest." },
+      { name: "Powerful Build", desc: "You count as one size larger for carrying capacity and push/drag/lift." },
+      { name: "Relentless Endurance (pre-2022 variant)", desc: "Once per long rest, drop to 1 HP instead of 0." },
+    ],
+    languages: "Common, Orc",
+  },
+  'Owlin': {
+    description: "Owlin are owl-folk from the plane of Strixhaven — silent, watchful scholars who can move through the air without making a sound. Their enormous eyes see clearly in the darkest libraries, and their silent wings give them a ghostly presence that unnerves most who encounter them.",
+    source: "Strixhaven: A Curriculum of Chaos (2021)",
+    size: "Medium or Small", speed: "30 ft, Fly 30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Darkvision", desc: "120 feet — one of the longest ranges of any playable race." },
+      { name: "Flight", desc: "Flying speed of 30 feet. Cannot fly wearing medium or heavy armor." },
+      { name: "Silent Feathers", desc: "Proficiency in Stealth." },
+    ],
+    languages: "Common, one other",
+  },
+  'Pallid Elf': {
+    description: "Pallid elves are a pale, contemplative elven subrace from the Pallid Grove of Wildemount — an ancient forest so old that even the eldest elves don't know its origin. Attuned to the world beyond the veil of the living, pallid elves seem to perceive things that others cannot, giving them an unsettling serenity.",
+    source: "Explorer's Guide to Wildemount (2020)",
+    size: "Medium", speed: "35 ft",
+    abilityScores: "+2 Dexterity, +1 Wisdom",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Ancestry", desc: "Advantage on saves vs. charm; can't be magically slept." },
+      { name: "Trance", desc: "4-hour meditative rest." },
+      { name: "Incisive Sense", desc: "Advantage on Investigation and Insight checks." },
+      { name: "Blessing of the Moon Weaver", desc: "You know Light cantrip. At 3rd level: Sleep (1/long rest). At 5th level: Invisibility (1/long rest). Wisdom is the spellcasting ability." },
+    ],
+    languages: "Common, Elvish",
+  },
+  'Plasmoid': {
+    description: "Plasmoids are amorphous, ooze-like sentient beings from the Astral Sea and beyond, capable of reshaping their body at will. Despite their alien physiology, they are sociable and curious creatures who travel the multiverse collecting experiences — and occasionally seeping under locked doors when necessary.",
+    source: "Spelljammer: Adventures in Space (2022)",
+    size: "Medium or Small", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Amorphous", desc: "You can squeeze through a space as narrow as 1 inch wide, provided you are not wearing armor." },
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Hold Breath", desc: "You can hold your breath for 1 hour." },
+      { name: "Natural Resilience", desc: "Resistance to acid and poison damage; advantage on saves against being poisoned." },
+      { name: "Shape Self", desc: "As a bonus action, reshape your body: form a pseudopod up to 10 feet long, form a new mouth, seal or open your eyes/ears, or change your coloration." },
+    ],
+    languages: "Common",
+  },
+  'Reborn': {
+    description: "Reborn are mortals who have died and returned — resurrected by mysterious forces with fragmented memories of their previous existence. They are living creatures, not undead, yet they carry the weight of death within them: slower aging, resistance to death's finality, and a haunting sense that they have unfinished business.",
+    source: "Van Richten's Guide to Ravenloft (2021)",
+    size: "Medium or Small", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Ancestral Legacy", desc: "If you replace a race, you keep any skill or tool proficiency from it. Otherwise, you gain proficiency in two skills of your choice." },
+      { name: "Deathless Nature", desc: "Advantage on saves against disease and being poisoned. Resistance to poison damage. Advantage on death saving throws. You don't need to eat, drink, or breathe." },
+      { name: "Knowledge from a Past Life", desc: "When you make an ability check using a skill, roll 1d6 and add the result to the check. Use a number of times = your PB per long rest." },
+    ],
+    languages: "Common, one other",
+  },
+  'Satyr': {
+    description: "Satyrs are fey creatures with the upper body of a humanoid and the lower body of a goat — devotees of revelry, music, and the wild passions of nature. Player character satyrs from Theros have adapted to mortal life without losing their fey nature, which grants them a remarkable magical resilience.",
+    source: "Mythic Odysseys of Theros (2020)",
+    size: "Medium", speed: "35 ft",
+    abilityScores: "+2 Charisma, +1 Dexterity (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Magic Resistance", desc: "Advantage on saving throws against spells and other magical effects. One of the most powerful racial traits in 5e." },
+      { name: "Ram", desc: "Your head is a natural weapon dealing 2d4 + Strength modifier bludgeoning damage. You can push the target 10 feet (Strength save, DC 8 + PB + Strength)." },
+      { name: "Mirthful Leaps", desc: "Whenever you make a long or high jump, roll 1d8 and add the result to the distance in feet." },
+      { name: "Reveler", desc: "Proficiency in Performance and Persuasion. One instrument of your choice." },
+    ],
+    languages: "Common, Elvish, Sylvan",
+  },
+  'Sea Elf': {
+    description: "Sea elves abandoned the surface world long ago for the ocean's depths, and their civilization predates most surface nations by thousands of years. Their coral cities, vast kelp farms, and undersea councils have shaped the oceans of countless D&D worlds. They are the most aquatic of all elven subraces.",
+    source: "Mordenkainen's Tome of Foes (2018); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft, Swim 30 ft",
+    abilityScores: "+2 Dexterity, +1 Constitution (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Ancestry", desc: "Advantage on saves vs. charm; can't be magically slept." },
+      { name: "Trance", desc: "4-hour rest instead of sleep." },
+      { name: "Child of the Sea", desc: "You can breathe air and water, and you have a swimming speed of 30 feet." },
+      { name: "Friend of the Sea", desc: "Using gestures and sounds, you can communicate simple ideas with any beast that has a swimming speed." },
+      { name: "Sea Elf Weapon Training", desc: "Proficiency in spear, trident, light crossbow, and net." },
+    ],
+    languages: "Common, Elvish, Aquan",
+  },
+  'Shadar-kai': {
+    description: "Shadar-kai are shadow elves — once high elves who bargained with the Raven Queen and became her eternal servants in the Shadowfell. Centuries in that grey, joyless plane have drained them of color and emotion, leaving beings of ash-pale skin, silver hair, and a desperate hunger for sensation to remind them they are still alive.",
+    source: "Mordenkainen's Tome of Foes (2018); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Dexterity, +1 Constitution (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Ancestry", desc: "Advantage on saves vs. charm; can't be magically slept." },
+      { name: "Trance", desc: "4-hour rest." },
+      { name: "Blessing of the Raven Queen", desc: "As a bonus action, teleport up to 30 feet to an unoccupied space you can see. Until the start of your next turn, you have resistance to all damage. Once per long rest." },
+      { name: "Necrotic Resistance", desc: "Resistance to necrotic damage." },
+    ],
+    languages: "Common, Elvish",
+  },
+  'Shifter': {
+    description: "Shifters are the 'weretouched' of Eberron — humanoids with lycanthrope heritage who can partially manifest their beast aspect in moments of stress or battle. They are sometimes called shapechangers by the ignorant, though they cannot fully transform. Shifter society is vibrant, if perpetually misunderstood.",
+    source: "Eberron: Rising from the Last War (2019); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "Varies by subrace",
+    traits: [
+      { name: "Shifting", desc: "As a bonus action, you can shift, gaining temporary HP equal to your level + Constitution modifier, plus one subrace benefit, for 1 minute. Once per short or long rest." },
+      { name: "Beasthide (Bear)", desc: "+1 Constitution. Shifting bonus: +1 AC." },
+      { name: "Longtooth (Wolf)", desc: "+1 Strength. Shifting: fangs dealing 1d6 + Strength piercing damage as a bonus action attack." },
+      { name: "Swiftstride (Cat)", desc: "+1 Dexterity, +1 Charisma. Shifting: +10 ft movement, no opportunity attacks when moving." },
+      { name: "Wildhunt (Predator)", desc: "+1 Wisdom. Shifting: Advantage on Wisdom checks/saves; can't be surprised." },
+    ],
+    languages: "Common",
+  },
+  'Simic Hybrid': {
+    description: "Simic Hybrids are the living experiments of the Simic Combine of Ravnica — humanoids who have been magically fused with the traits of sea creatures. The Combine believes all life should be free to evolve beyond its current form. Player hybrids choose animal enhancements that grow stronger as they level.",
+    source: "Guildmaster's Guide to Ravnica (2018)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Constitution, +1 to any other score",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Animal Enhancement (1st level)", desc: "Choose one: Manta Glide (wings, 30 ft glide), Nimble Climber (climb speed 30 ft), or Underwater Adaptation (breathe water, swim 30 ft)." },
+      { name: "Animal Enhancement (5th level)", desc: "Choose one additional: Grappling Appendages (two tentacles, grapple as bonus action), Carapace (+1 AC), or Acid Spit (2d10 acid in a 30 ft line)." },
+    ],
+    languages: "Common, one extra",
+  },
+  'Tabaxi': {
+    description: "Tabaxi are cat-folk from the distant continent of Maztica — wandering collectors of stories, artifacts, and secrets. Their culture is guided by the Cat Lord, a divine figure who cursed them with an insatiable curiosity that drives them to travel and collect. They are among the most widely-traveled races in the game.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft, Climb 20 ft",
+    abilityScores: "+2 Dexterity, +1 Charisma (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Feline Agility", desc: "Your reflexes allow you to move with a burst of speed. When you move on your turn, you can double your speed until the turn ends. Once per use, must move 0 on a turn before using again." },
+      { name: "Cat's Claws", desc: "You have a climbing speed of 20 ft. Your claws deal 1d4 + Strength modifier slashing damage." },
+      { name: "Cat's Talent", desc: "Proficiency in Perception and Stealth." },
+    ],
+    languages: "Common, one extra",
+  },
+  'Thri-kreen': {
+    description: "Thri-kreen are insectoid warriors who do not sleep — they are fully active every hour of every day. Their four arms, chitinous exoskeleton, and natural camouflage make them formidable combatants. They communicate through a combination of mandible clicks and psionic telepathy.",
+    source: "Spelljammer: Adventures in Space (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "Any +2/+1",
+    traits: [
+      { name: "Chameleon Carapace", desc: "As an action, change your color and pattern to match surroundings. Gain advantage on Stealth checks while motionless." },
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Secondary Arms", desc: "You have two additional arms. They can hold objects but can't wield shields or weapons. Add one item interaction per turn freely." },
+      { name: "Sleepless", desc: "You don't sleep and can't be forced to by magic. You finish long rests in 4 hours of inactive meditation." },
+      { name: "Telepathy", desc: "You can telepathically communicate with any creature within 60 feet that has a language." },
+    ],
+    languages: "Common, Thri-kreen",
+  },
+  'Tiefling': {
+    description: "Tieflings bear the infernal mark of an ancient pact between the archduke Asmodeus and the Netherese empire — every tiefling in the Forgotten Realms carries this legacy in their blood. Horns, tails, and glowing eyes mark them instantly, earning suspicion they must constantly work to overcome.",
+    source: "Player's Handbook (2014); Mordenkainen's Tome of Foes (2018)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Charisma, +1 Intelligence (standard); variants differ by infernal patron",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Hellish Resistance", desc: "Resistance to fire damage." },
+      { name: "Infernal Legacy", desc: "Know Thaumaturgy cantrip. At 3rd level: Hellish Rebuke (1/long rest). At 5th level: Darkness (1/long rest). Charisma is spellcasting ability." },
+      { name: "Tiefling Variants (Mordenkainen's)", desc: "Each of the nine archdevil bloodlines grants different spells and traits. Zariel: Fly speed + fire damage. Glasya: Invisibility + Minor Illusion. Levistus: Ice armor. And more." },
+    ],
+    languages: "Common, Infernal",
+  },
+  'Tortle': {
+    description: "Tortles are humanoid tortoises who begin their long, patient lives on tropical beaches and spend adulthood wandering, seeing the world before returning to the sea to lay eggs and die. They carry their home on their back — literally — and that security gives them a remarkable philosophical serenity.",
+    source: "The Tortle Package (2017); Mordenkainen Presents: Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft, Swim 30 ft",
+    abilityScores: "+2 Strength, +1 Wisdom (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Claws", desc: "Natural weapons dealing 1d4 slashing damage + Strength modifier." },
+      { name: "Hold Breath", desc: "You can hold your breath for up to 1 hour." },
+      { name: "Natural Armor", desc: "Your shell gives you AC = 17. Shields still work. You cannot wear armor." },
+      { name: "Shell Defense", desc: "Retreat into your shell as an action: +4 AC, resistance to all damage, prone condition, speed 0, disadvantage on Strength/Dexterity checks, can't take reactions. Emerge as a bonus action." },
+      { name: "Survival Instinct", desc: "Proficiency in Survival." },
+    ],
+    languages: "Common, Aquan",
+  },
+  'Triton': {
+    description: "Tritons are oceanic humanoids who descended from the Elemental Plane of Water to guard the deepest seas against Abyssal threats. They are noble, formal, and just slightly condescending — convinced that their sacrifices for a surface world that barely knows they exist deserves more appreciation than it receives.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft, Swim 30 ft",
+    abilityScores: "+1 Strength, +1 Constitution, +1 Charisma (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Amphibious", desc: "You can breathe air and water." },
+      { name: "Control Air and Water", desc: "At 3rd level: Fog Cloud (1/long rest). At 5th level: Gust of Wind (1/long rest). At 7th level: Wall of Water (1/long rest). Charisma is spellcasting ability." },
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Emissary of the Sea", desc: "You can communicate simple ideas with beasts that have a swimming speed." },
+      { name: "Guardians of the Depths", desc: "Resistance to cold damage. Adapted to deep sea pressure — extreme cold and pressure don't harm you." },
+    ],
+    languages: "Common, Primordial",
+  },
+  'Vedalken': {
+    description: "Vedalken are blue-skinned humanoids from Ravnica who pursue intellectual perfection with a serene intensity. They view all flaws — in themselves, in their work, in their world — as simply unsolved problems. Their narrow emotional range is not coldness; it is the focused warmth of complete concentration.",
+    source: "Guildmaster's Guide to Ravnica (2018)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Intelligence, +1 Wisdom (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Vedalken Dispassion", desc: "Advantage on all Intelligence, Wisdom, and Charisma saves." },
+      { name: "Tireless Precision", desc: "Proficiency in one skill and one tool, and roll 1d4 on checks using those proficiencies." },
+      { name: "Partially Amphibious", desc: "Hold breath up to 1 hour. Can breathe water for short periods when fully submerged." },
+    ],
+    languages: "Common, Vedalken, two others",
+  },
+  'Verdan': {
+    description: "Verdans are goblinoids transformed by the wild magic of Primus into a new, independent race. Tall, green, and deeply empathic, they have evolved far beyond their goblinoid origins in a short time. Their involuntary telepathy lets them feel the emotions of everyone around them — a gift and a burden in equal measure.",
+    source: "Acquisitions Incorporated (2019)",
+    size: "Small (young), Medium (older)", speed: "30 ft",
+    abilityScores: "+1 Constitution, +2 Charisma (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Telepathic Insight", desc: "Advantage on Wisdom and Charisma saves, as your involuntary empathy makes it difficult for others to deceive or overwhelm you." },
+      { name: "Limited Telepathy", desc: "You can communicate simple ideas telepathically with willing creatures within 30 feet who share a language with you." },
+      { name: "Persuasive", desc: "Proficiency in Persuasion." },
+      { name: "Unsettling Presence", desc: "As an action, impose disadvantage on the next Wisdom save of a creature within 30 feet that can see you. Once per short rest." },
+    ],
+    languages: "Common, Goblin, one other",
+  },
+  'Warforged': {
+    description: "Warforged are living constructs created to serve in the Last War of Eberron — forged from wood, metal, stone, and powerful binding magic. The war ended; their purpose did not. Legally uncertain, emotionally evolving, and functionally immortal, warforged navigate existence with a combination of soldier's discipline and philosopher's wonder.",
+    source: "Eberron: Rising from the Last War (2019)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Constitution, +1 to any other",
+    traits: [
+      { name: "Constructed Resilience", desc: "Advantage on saves against poison and disease. Resistance to poison damage. Immune to disease. Don't need to eat, drink, or breathe. Don't sleep; 6-hour inactive rest counts as long rest." },
+      { name: "Sentry's Rest", desc: "You are aware of your surroundings during your rest state — you can't be surprised." },
+      { name: "Integrated Protection", desc: "Your armor is part of your body: AC = 11 + your proficiency bonus + Dexterity modifier (base). You can also use light, medium, or heavy armor, but must spend 1 hour integrating/removing it." },
+      { name: "Specialized Design", desc: "Proficiency in one skill and one tool of your choice." },
+    ],
+    languages: "Common, one other",
+  },
+  'Wood Elf': {
+    description: "Wood elves are the most wild and nature-attuned of the elven subraces. They have lived in deep forests for thousands of years, developing a quiet attunement to the natural world and an uncanny ability to disappear into foliage. They move faster than other elves, think with careful patience, and rarely trust outsiders quickly.",
+    source: "Player's Handbook (2014)",
+    size: "Medium", speed: "35 ft",
+    abilityScores: "+2 Dexterity, +1 Wisdom",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Keen Senses", desc: "Proficiency in Perception." },
+      { name: "Fey Ancestry", desc: "Advantage on saves vs. charm; can't be magically slept." },
+      { name: "Trance", desc: "4-hour rest." },
+      { name: "Elf Weapon Training", desc: "Proficiency in longsword, shortsword, shortbow, and longbow." },
+      { name: "Fleet of Foot", desc: "Base walking speed increases to 35 feet." },
+      { name: "Mask of the Wild", desc: "You can attempt to hide even when only lightly obscured by natural phenomena — foliage, rain, mist, snow." },
+    ],
+    languages: "Common, Elvish",
+  },
+  'Yuan-ti Pureblood': {
+    description: "Yuan-ti purebloods are the most humanoid of the yuan-ti — snake-folk who once ruled great human nations and gradually transformed their populations through dark ritual. Purebloods appear almost entirely human, betrayed only by slit pupils, a forked tongue, or subtle scaling. They are the yuan-ti's most effective infiltrators.",
+    source: "Volo's Guide to Monsters (2016); Monsters of the Multiverse (2022)",
+    size: "Medium", speed: "30 ft",
+    abilityScores: "+2 Charisma, +1 Intelligence (original); any +2/+1 (2022)",
+    traits: [
+      { name: "Darkvision", desc: "60 feet." },
+      { name: "Innate Spellcasting", desc: "Know Poison Spray cantrip. At 3rd level: Animal Friendship (snakes only, at will). At 5th level: Suggestion (1/long rest). Charisma is spellcasting ability." },
+      { name: "Magic Resistance", desc: "Advantage on saving throws against spells and other magical effects." },
+      { name: "Poison Immunity", desc: "Immunity to poison damage and the poisoned condition." },
+    ],
+    languages: "Common, Abyssal, Draconic",
+  },
+};
+
+function RaceInfoModal({ raceName, onClose, onSelect, isSelected }: {
+  raceName: string;
+  onClose: () => void;
+  onSelect: () => void;
+  isSelected: boolean;
+}) {
+  const info = RACE_INFO[raceName];
+
+  return (
+    <AnimatePresence>
+      <motion.div
+        key="backdrop"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-end justify-center"
+        onClick={onClose}
+      >
+        <motion.div
+          key="sheet"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+          className="w-full max-w-lg bg-card border-t-2 border-primary/40 rounded-t-2xl max-h-[85vh] flex flex-col"
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Handle bar */}
+          <div className="flex justify-center pt-3 pb-1 shrink-0">
+            <div className="w-10 h-1 rounded-full bg-primary/30" />
+          </div>
+
+          {/* Header */}
+          <div className="flex items-start justify-between px-5 pt-2 pb-3 border-b border-border shrink-0">
+            <div>
+              <h2 className="text-xl font-display text-primary tracking-wider">{raceName}</h2>
+              {info && (
+                <p className="text-xs text-muted-foreground mt-0.5">{info.source}</p>
+              )}
+            </div>
+            <button onClick={onClose} className="text-muted-foreground hover:text-foreground p-1 rounded-lg transition-colors mt-0.5">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Scrollable body */}
+          <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4">
+            {info ? (
+              <>
+                <p className="text-muted-foreground text-sm leading-relaxed">{info.description}</p>
+
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: 'Size', val: info.size },
+                    { label: 'Speed', val: info.speed },
+                    { label: 'Languages', val: info.languages },
+                  ].map(({ label, val }) => (
+                    <div key={label} className="bg-background rounded-lg p-2 border border-border">
+                      <p className="text-primary/60 text-[10px] font-display tracking-widest uppercase mb-0.5">{label}</p>
+                      <p className="text-foreground text-xs leading-tight">{val}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Ability scores */}
+                <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                  <p className="text-primary text-xs font-display tracking-widest uppercase mb-1">Ability Score Increases</p>
+                  <p className="text-foreground text-sm">{info.abilityScores}</p>
+                </div>
+
+                {/* Subraces */}
+                {info.subraces && (
+                  <div className="bg-background border border-border rounded-lg p-3">
+                    <p className="text-primary/70 text-xs font-display tracking-widest uppercase mb-1">Subraces</p>
+                    <p className="text-muted-foreground text-sm">{info.subraces}</p>
+                  </div>
+                )}
+
+                {/* Traits */}
+                <div className="space-y-2">
+                  <p className="text-primary text-xs font-display tracking-widest uppercase">Racial Traits</p>
+                  {info.traits.map(t => (
+                    <div key={t.name} className="bg-background border border-border rounded-lg p-3">
+                      <p className="text-foreground text-sm font-semibold mb-0.5">{t.name}</p>
+                      <p className="text-muted-foreground text-xs leading-relaxed">{t.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p className="text-muted-foreground text-sm italic text-center py-8">
+                No detailed information available for this race.<br />Consult your Dungeon Master or homebrew source.
+              </p>
+            )}
+          </div>
+
+          {/* Footer CTA */}
+          <div className="px-5 py-4 border-t border-border shrink-0">
+            <button
+              onClick={() => { onSelect(); onClose(); }}
+              className={cn(
+                "w-full py-3 rounded-xl font-display tracking-wider text-sm transition-all duration-200",
+                isSelected
+                  ? "bg-primary/20 border-2 border-primary text-primary"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-primary"
+              )}
+            >
+              {isSelected ? `✓ ${raceName} Selected` : `Select ${raceName}`}
+            </button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
 interface WizardFormProps {
   mode: CharacterMode;
 }
@@ -1156,6 +2148,8 @@ export default function WizardForm({ mode }: WizardFormProps) {
   const [quote] = useState<NameQuote>(() => NAME_QUOTES[Math.floor(Math.random() * NAME_QUOTES.length)]);
   const [race, setRace] = useState('');
   const [customRace, setCustomRace] = useState('');
+  const [raceFact] = useState<RaceFact>(() => RACE_FACTS[Math.floor(Math.random() * RACE_FACTS.length)]);
+  const [raceModalTarget, setRaceModalTarget] = useState<string | null>(null);
   const [charClass, setCharClass] = useState('');
   const [personality, setPersonality] = useState('');
   const [powerLevel, setPowerLevel] = useState<PowerLevel>('Commoner');
@@ -1164,7 +2158,7 @@ export default function WizardForm({ mode }: WizardFormProps) {
 
   const steps = [
     { title: "The Name", desc: "Who are you?" },
-    { title: "Lineage", desc: "Choose your ancestry" },
+    { title: "Race", desc: "Choose your ancestry" },
     { title: "Calling", desc: "Choose your path" },
     { title: "Essence", desc: "Traits & Flaws" },
     ...(mode === 'npc' ? [{ title: "Might", desc: "Set power level" }] : []),
@@ -1246,28 +2240,57 @@ export default function WizardForm({ mode }: WizardFormProps) {
       case 1:
         return (
           <div className="space-y-4 pb-8">
+            {/* Random race fun fact */}
+            <div className="text-center mb-2 px-2">
+              <p className="text-muted-foreground text-sm italic leading-relaxed mb-1.5">
+                "{raceFact.text}"
+              </p>
+              <p className="text-primary/50 text-xs font-display tracking-wider">
+                ── {raceFact.race} ──
+              </p>
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               {RACES.map(r => (
-                <button
-                  key={r}
-                  onClick={() => {
-                    setRace(r);
-                    if (r !== 'Other') setCustomRace('');
-                  }}
-                  className={cn(
-                    "px-4 py-4 rounded-xl border-2 font-display tracking-wider text-sm transition-all duration-300 hover-elevate text-left",
-                    race === r
-                      ? "bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(234,179,8,0.2)]"
-                      : "bg-card border-border text-foreground hover:border-primary/50"
-                  )}
-                >
-                  {r === 'Other' ? (
-                    <span className="flex items-center gap-2">
-                      <PenLine className="w-4 h-4 shrink-0" />
-                      Other…
-                    </span>
-                  ) : r}
-                </button>
+                <div key={r} className="relative group">
+                  <button
+                    onClick={() => {
+                      if (r === 'Other') {
+                        setRace(r);
+                        setCustomRace('');
+                      } else {
+                        setRace(r);
+                        setRaceModalTarget(r);
+                      }
+                    }}
+                    className={cn(
+                      "w-full px-4 py-4 rounded-xl border-2 font-display tracking-wider text-sm transition-all duration-300 hover-elevate text-left",
+                      race === r
+                        ? "bg-primary/20 border-primary text-primary shadow-[0_0_15px_rgba(234,179,8,0.2)]"
+                        : "bg-card border-border text-foreground hover:border-primary/50"
+                    )}
+                  >
+                    {r === 'Other' ? (
+                      <span className="flex items-center gap-2">
+                        <PenLine className="w-4 h-4 shrink-0" />
+                        Other…
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-between gap-1">
+                        <span>{r}</span>
+                        {RACE_INFO[r] && (
+                          <button
+                            onClick={e => { e.stopPropagation(); setRaceModalTarget(r); }}
+                            className="text-primary/40 hover:text-primary transition-colors p-0.5 rounded"
+                            title={`Info about ${r}`}
+                          >
+                            <Info className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </span>
+                    )}
+                  </button>
+                </div>
               ))}
             </div>
 
@@ -1282,7 +2305,7 @@ export default function WizardForm({ mode }: WizardFormProps) {
                 >
                   <div className="pt-2 pb-1">
                     <p className="text-muted-foreground text-sm italic mb-3 text-center">
-                      Name your lineage — homebrew, lore-expansion, or legend of your own making.
+                      Name your race — homebrew, lore-expansion, or legend of your own making.
                     </p>
                     <input
                       type="text"
@@ -1464,6 +2487,16 @@ export default function WizardForm({ mode }: WizardFormProps) {
           )}
         </Button>
       </div>
+
+      {/* Race info modal */}
+      {raceModalTarget && (
+        <RaceInfoModal
+          raceName={raceModalTarget}
+          onClose={() => setRaceModalTarget(null)}
+          onSelect={() => { setRace(raceModalTarget); setCustomRace(''); }}
+          isSelected={race === raceModalTarget}
+        />
+      )}
     </div>
   );
 }
