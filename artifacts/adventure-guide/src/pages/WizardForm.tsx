@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CharacterMode, PowerLevel, generateStats, generateBackstory, generatePortraitUrl, Character } from '@/lib/dnd-engine';
@@ -2025,7 +2026,7 @@ function RaceInfoModal({ raceName, onClose, onSelect, isSelected }: {
 }) {
   const info = RACE_INFO[raceName];
 
-  return (
+  return createPortal(
     <AnimatePresence>
       <motion.div
         key="backdrop"
@@ -2130,7 +2131,8 @@ function RaceInfoModal({ raceName, onClose, onSelect, isSelected }: {
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
