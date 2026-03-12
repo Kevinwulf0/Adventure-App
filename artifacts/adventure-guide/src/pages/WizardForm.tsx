@@ -802,22 +802,342 @@ function randomFantasyName(): string {
 const RACES = [
   'Aarakocra', 'Aasimar', 'Astral Elf', 'Autognome',
   'Bugbear', 'Centaur', 'Changeling',
-  'Deep Gnome', 'Dhampir', 'Dragonborn', 'Dwarf',
+  'Deep Gnome', 'Dhampir', 'Dragonborn', 'Drow', 'Duergar', 'Dwarf',
   'Eladrin', 'Elf', 'Fairy', 'Firbolg',
   'Genasi', 'Giff', 'Githyanki', 'Githzerai', 'Gnome', 'Goblin', 'Goliath', 'Grung',
-  'Hadozee', 'Half-Elf', 'Half-Orc', 'Halfling', 'Harengon', 'Hexblood', 'Hobgoblin', 'Human',
-  'Kalashtar', 'Kenku', 'Kobold',
-  'Leonin', 'Lizardfolk', 'Locathah', 'Loxodon',
+  'Hadozee', 'Half-Elf', 'Half-Orc', 'Halfling', 'Harengon', 'Hexblood', 'High Elf', 'Hobgoblin', 'Human',
+  'Kalashtar', 'Kender', 'Kenku', 'Kobold',
+  'Leonin', 'Lizardfolk', 'Locathah', 'Lotusden Halfling', 'Loxodon',
   'Minotaur',
   'Orc', 'Owlin',
-  'Plasmoid',
+  'Pallid Elf', 'Plasmoid',
   'Reborn',
   'Satyr', 'Sea Elf', 'Shadar-kai', 'Shifter', 'Simic Hybrid',
   'Tabaxi', 'Thri-kreen', 'Tiefling', 'Tortle', 'Triton',
   'Vedalken', 'Verdan',
-  'Warforged',
+  'Warforged', 'Wood Elf',
   'Yuan-ti Pureblood',
   'Other',
+];
+
+interface RaceFact {
+  text: string;
+  race: string;
+}
+
+const RACE_FACTS: RaceFact[] = [
+  // Aarakocra
+  { race: "Aarakocra", text: "Aarakocra can fly up to 50 feet per round, making them the fastest airborne race among all core Player's Handbook options." },
+  { race: "Aarakocra", text: "Aarakocra originate from the Elemental Plane of Air, where they serve the Wind Dukes of Aaqa as scouts and messengers." },
+  { race: "Aarakocra", text: "Their talons deal 1d4 slashing damage as a natural weapon — making them dangerous combatants even without a blade in hand." },
+  { race: "Aarakocra", text: "Many Dungeon Masters ban Aarakocra from low-level play — the ability to fly at level 1 bypasses enormous amounts of dungeon design." },
+  // Aasimar
+  { race: "Aasimar", text: "Every Aasimar is guided by a celestial being that communicates through dreams and visions, acting as a divine conscience." },
+  { race: "Aasimar", text: "The three Aasimar subraces reflect different divine callings: Protector (guardian), Scourge (punisher), and Fallen (corrupted)." },
+  { race: "Aasimar", text: "Aasimar are the celestial counterpart to Tieflings — where tieflings carry fiendish blood, aasimar radiate the light of the Upper Planes." },
+  { race: "Aasimar", text: "A Fallen Aasimar represents what happens when celestial purpose is corrupted — they are D&D's take on the concept of the fallen angel." },
+  // Astral Elf
+  { race: "Astral Elf", text: "Astral Elves have lived so long in the timeless Astral Sea that they no longer need to trance — they simply do not age." },
+  { race: "Astral Elf", text: "Due to their timeless existence, Astral Elves often seem detached from mortal concerns, viewing centuries as most people view weeks." },
+  // Autognome
+  { race: "Autognome", text: "Autognomes are mechanical constructs built by gnome artificers — clockwork beings that gained true sentience." },
+  { race: "Autognome", text: "Like Warforged, Autognomes don't need to eat or breathe, but they do require maintenance — they carry spare parts as a survival instinct." },
+  // Bugbear
+  { race: "Bugbear", text: "Bugbears are the largest of the goblinoid races, standing 7 to 8 feet tall with powerful frames built specifically for ambush." },
+  { race: "Bugbear", text: "Despite their size, Bugbears are naturally stealthy — their racial Skulker trait lets them hide where only a sliver of shadow falls." },
+  { race: "Bugbear", text: "Bugbear arms are disproportionately long, giving them an extra 5 feet of reach on melee attacks — they fight like living polearms." },
+  // Centaur
+  { race: "Centaur", text: "Centaurs from the Theros setting are devotees of the wild god Nylea — they serve as her messengers and forest wardens." },
+  { race: "Centaur", text: "A Centaur's Charge ability lets them deal bonus damage when they move at least 30 feet toward a target before attacking." },
+  { race: "Centaur", text: "Centaurs technically count as Large creatures from the waist down — their lower body can be used as a mount by a Tiny creature." },
+  // Changeling
+  { race: "Changeling", text: "A Changeling's true face is actually a blank, featureless neutral mask — the face they were born with before they learned to shape it." },
+  { race: "Changeling", text: "In Eberron, Changelings are the children of doppelgangers and humans, inheriting the ability to shift form at will." },
+  { race: "Changeling", text: "Changelings can alter height, weight, voice, and facial features — but their clothing and equipment remain unchanged, a common disguise flaw." },
+  { race: "Changeling", text: "The Traveler, a chaotic neutral deity of deception and change, is the patron god worshipped by many in Changeling society." },
+  // Deep Gnome
+  { race: "Deep Gnome", text: "Deep Gnomes (Svirfneblin) live in the Underdark city of Blingdenstone — one of the few non-drow settlements beneath the surface world." },
+  { race: "Deep Gnome", text: "Svirfneblin skin evolved over millennia to range from dark rocky grey to brown, blending seamlessly with Underdark stone walls." },
+  { race: "Deep Gnome", text: "Deep Gnomes have innate Nondetection as a racial trait, making them invisible to magical divination — a critical survival tool below ground." },
+  // Dhampir
+  { race: "Dhampir", text: "Dhampirs are half-vampire mortals — touched by the vampire's curse but not fully transformed, still clinging to the warmth of the living." },
+  { race: "Dhampir", text: "A Dhampir's Spider Climb ability — moving up walls and across ceilings — is a hallmark of their vampiric ancestry." },
+  { race: "Dhampir", text: "Dhampirs can sustain themselves on normal food and water, but feeding on blood provides them a temporary boost to vitality." },
+  // Dragonborn
+  { race: "Dragonborn", text: "There are 10 types of draconic ancestry available to Dragonborn — each granting a different breath weapon element and damage type." },
+  { race: "Dragonborn", text: "In the Forgotten Realms, Dragonborn trace their spiritual lineage to the god Io, who split himself into Bahamut and Tiamat." },
+  { race: "Dragonborn", text: "Chromatic, Metallic, and Gem Dragonborn represent three families of dragon — chaos, order, and the neutrality of pure thought." },
+  { race: "Dragonborn", text: "In the Exandria setting, Dragonborn founded the empire of Draconia — a floating chain of islands reserved exclusively for their kind." },
+  { race: "Dragonborn", text: "A Dragonborn's breath weapon is one of only a handful of racial features in 5e that scales with character level." },
+  // Drow
+  { race: "Drow", text: "Drow were cursed by the goddess Corellon and driven underground for worshipping the spider queen Lolth — their exile shaped all of Underdark history." },
+  { race: "Drow", text: "Drow have 120 feet of darkvision — twice the range of most races — an adaptation developed over millennia in the lightless Underdark." },
+  { race: "Drow", text: "Drizzt Do'Urden, the most famous Drow in D&D fiction, has been defying his culture's evil reputation since R.A. Salvatore's 'The Crystal Shard' in 1988." },
+  { race: "Drow", text: "Drow society is strictly matriarchal — led by high priestesses of Lolth — and noble houses compete ruthlessly for their goddess's divine favor." },
+  { race: "Drow", text: "In Menzoberranzan, the most famous Drow city, house rank determines everything — officially sanctioned assassination of rivals is considered a religious act." },
+  { race: "Drow", text: "Male Drow are typically warriors or wizards; only females may ascend to the priesthood, the highest position of power in Drow society." },
+  { race: "Drow", text: "Drow steel equipment disintegrates rapidly when exposed to sunlight — a limitation that makes surface raids both daring and costly." },
+  // Duergar
+  { race: "Duergar", text: "Duergar, the gray dwarves, were enslaved by mind flayers for thousands of years in the Underdark — and gained psionic abilities as a result." },
+  { race: "Duergar", text: "Duergar can magically enlarge themselves to twice their normal size or turn invisible — psychic gifts from their illithid captors." },
+  { race: "Duergar", text: "Unlike regular dwarves, Duergar are immune to both paralysis and illusion magic, hardened by centuries of mental subjugation." },
+  { race: "Duergar", text: "Duergar skin ranges from charcoal grey to ash white, and their eyes are said to glow faintly red when viewed in absolute darkness." },
+  { race: "Duergar", text: "Duergar society in Gracklstugh is built around the twin gods Laduguer and Deep Duerra — both former dwarven heroes who ascended to godhood." },
+  // Dwarf
+  { race: "Dwarf", text: "A Dwarf who reaches 350 years old is considered middle-aged — they can live well past 400 years, carrying centuries of accumulated grudges." },
+  { race: "Dwarf", text: "Every Dwarf clan maintains a 'grudge book' — a tome listing every insult done to the clan across generations, never forgetting a single slight." },
+  { race: "Dwarf", text: "The dwarven god Moradin is called the 'Soul Forger' — said to have hammered the first dwarves out of iron and stone at the heart of the world." },
+  { race: "Dwarf", text: "Dwarves move at 25 feet per round — slower than most races — but their speed is never reduced by wearing heavy armor." },
+  { race: "Dwarf", text: "Stonecunning gives dwarves advantage on History checks related to stonework — they can feel the difference between natural caves and worked stone." },
+  // Eladrin
+  { race: "Eladrin", text: "Eladrin embody the four seasons — Spring, Summer, Autumn, and Winter — with their personality and alignment shifting as the seasons change." },
+  { race: "Eladrin", text: "An Eladrin's Fey Step lets them teleport up to 30 feet as a bonus action, with bonus effects based on their current season." },
+  { race: "Eladrin", text: "In Summer, an Eladrin radiates warmth that burns — enemies adjacent when they Fey Step take fire damage." },
+  { race: "Eladrin", text: "Eladrin once lived on the Material Plane but retreated into the Feywild long ago, and have since become more fey than mortal." },
+  // Elf
+  { race: "Elf", text: "Elves don't sleep — they enter a meditative trance called 'Reverie' for 4 hours, reliving memories of past centuries." },
+  { race: "Elf", text: "Elves are considered adults at 100 years old, though they can live to 750 years or more — childhood alone lasts a human lifetime." },
+  { race: "Elf", text: "The Elven god Corellon Larethian created all elves, and legend holds the first elf sprang from a divine teardrop shed in battle." },
+  { race: "Elf", text: "Elves cannot be put to sleep by magical means — their Fey Ancestry trait also gives them advantage against charm effects." },
+  { race: "Elf", text: "The Elven language is one of the most widely spoken tongues in D&D settings — considered the original language of the Feywild itself." },
+  // Fairy
+  { race: "Fairy", text: "Fairies are one of only three core races with natural flight from level 1 — making them controversial picks for indoor dungeon crawls." },
+  { race: "Fairy", text: "Fairies have innate access to Faerie Fire and Enlarge/Reduce — the perfect trickster toolkit for any adventuring party." },
+  { race: "Fairy", text: "In Feywild lore, Fairies are the most commonly encountered fey — playful, capricious, and utterly unpredictable in their loyalties." },
+  // Firbolg
+  { race: "Firbolg", text: "Firbolgs are giant-kin who live as reclusive forest guardians — their name means 'Great Elder' in the Giant tongue." },
+  { race: "Firbolg", text: "Firbolg culture holds that speaking names aloud gives power to enemies — so they speak about themselves in the third person or use oblique titles." },
+  { race: "Firbolg", text: "Firbolgs can detect magic within 60 feet at will, and magically disguise themselves as any Medium humanoid for up to 10 minutes." },
+  { race: "Firbolg", text: "Firbolgs share a mystical bond with nature — they can communicate simple ideas with beasts and plants using a kind of wordless empathy." },
+  // Genasi
+  { race: "Genasi", text: "The four Genasi subraces — Air, Earth, Fire, and Water — correspond to the four elemental planes and the great genie civilizations within." },
+  { race: "Genasi", text: "Fire Genasi are born from unions with efreet (fire genies), giving them a natural resistance to fire and the ability to create magical light." },
+  { race: "Genasi", text: "Water Genasi can breathe water indefinitely and speak with any creature that breathes water — making them the most aquatic core race." },
+  { race: "Genasi", text: "Earth Genasi can pass through solid stone or packed dirt without disturbing it, briefly becoming one with the rock itself." },
+  { race: "Genasi", text: "Air Genasi carry a permanent personal breeze at all times — their hair and clothing move even in a sealed, windless room." },
+  // Giff
+  { race: "Giff", text: "Giff are hippo-folk from the Spelljammer setting — mercenary warriors who are obsessed with firearms and military protocol." },
+  { race: "Giff", text: "A Giff's Hippogriff Charge lets them deal bonus damage when they move 20 feet in a straight line toward a target before attacking." },
+  { race: "Giff", text: "Giff society is organized around military ranks — even their merchants and scholars hold honorary military titles." },
+  // Githyanki
+  { race: "Githyanki", text: "Githyanki live aboard astral ships, raiding both the Astral Plane and the Material Plane while serving their lich-queen Vlaakith." },
+  { race: "Githyanki", text: "Every Githyanki of sufficient power carries a silver sword — a blade that can sever an opponent's silver cord on the Astral Plane, killing them instantly." },
+  { race: "Githyanki", text: "Githyanki were once slaves of the illithid empire — the great revolution led by the hero Gith liberated their race and scarred the mind flayers forever." },
+  { race: "Githyanki", text: "Githyanki psionics allow them to cast Jump, Misty Step, and Plane Shift — all framed as mental projections rather than arcane magic." },
+  // Githzerai
+  { race: "Githzerai", text: "Githzerai make their monasteries in Limbo — the plane of pure chaos — bending the environment through sheer mental will to create stable ground." },
+  { race: "Githzerai", text: "Githzerai are the philosophical counterparts to the militant Githyanki: monastic, disciplined, and devoted to inner peace above conquest." },
+  { race: "Githzerai", text: "The Githzerai founder, Zerthimon, is worshipped as a near-divine figure — their philosophy is called the 'Teachings of Zerthimon.'" },
+  // Gnome
+  { race: "Gnome", text: "Gnomes have advantage on all mental saving throws against magic — their Gnomish Cunning represents centuries of outwitting fey tricksters." },
+  { race: "Gnome", text: "Forest Gnomes can communicate with small beasts and cast Minor Illusion at will — living at the boundary between the natural and illusory worlds." },
+  { race: "Gnome", text: "Rock Gnomes are the only core race with proficiency in Tinker's Tools, allowing them to build small clockwork devices as a racial ability." },
+  { race: "Gnome", text: "The gnomish god Garl Glittergold is a prankster deity — he once collapsed a dragon's lair through an elaborate trick, saving his people." },
+  // Goblin
+  { race: "Goblin", text: "Goblins are the most commonly encountered monster in D&D history — appearing in every single edition of the game since 1974." },
+  { race: "Goblin", text: "Goblin player characters can Disengage or Hide as a bonus action — a feature that makes them surprisingly slippery in combat." },
+  { race: "Goblin", text: "Goblins worship a pantheon led by Maglubiyet, the 'Conquering God,' depicted as a pitch-black axe-wielding warrior of divine fury." },
+  { race: "Goblin", text: "In the Forgotten Realms jungle, a subspecies called the 'Batiri' form organized war-bands that have sacked entire villages." },
+  // Goliath
+  { race: "Goliath", text: "Goliath culture keeps a running score of lifetime accomplishments — a tradition called 'The Tale' that determines one's social standing." },
+  { race: "Goliath", text: "Goliath society values fair competition above all — cheating, or using any unfair advantage, is their deepest cultural taboo." },
+  { race: "Goliath", text: "Stone's Endurance lets Goliaths reduce incoming damage by 1d12 + Constitution modifier once per short rest — their skin is literally tough as rock." },
+  { race: "Goliath", text: "Goliaths are descended from ancient giants but developed into a separate race over thousands of years of isolated mountain life." },
+  // Grung
+  { race: "Grung", text: "Grungs are poisonous frog-folk from the Forgotten Realms jungles — their skin secretes toxins that can be absorbed through contact." },
+  { race: "Grung", text: "Grung society is rigidly stratified by color — green Grungs are warriors, orange are crafters, red are scholars, and gold are royalty." },
+  { race: "Grung", text: "A Grung's natural poison coating is so potent it can affect creatures that merely touch their skin, not just those they attack." },
+  // Hadozee
+  { race: "Hadozee", text: "Hadozee are spacefaring simians from the Spelljammer setting — they use skin flaps between their limbs to glide between ship decks." },
+  { race: "Hadozee", text: "A Hadozee's patagial membranes let them slow their fall to 60 feet per round, taking no damage from falls of 100 feet or less." },
+  { race: "Hadozee", text: "The Hadozee as a culture began with a single bargain — they traded service to a wizard for training, and space-faring became their destiny." },
+  // Half-Elf
+  { race: "Half-Elf", text: "Half-Elves are one of the few races with no 'true homeland' — belonging fully to neither elven nor human society, perpetual outsiders." },
+  { race: "Half-Elf", text: "Half-Elves gain proficiency in two skills of their choice at character creation — making them the most versatile race for building any class." },
+  { race: "Half-Elf", text: "Half-Elf lifespans range from 150 to 200 years — far shorter than full elves, a constant quiet reminder of their human mortality." },
+  { race: "Half-Elf", text: "In Eberron, half-elves with Dragonmarks belong to House Lyrandar (Mark of Storm) or House Medani (Mark of Detection)." },
+  // Half-Orc
+  { race: "Half-Orc", text: "Half-Orcs are the only core race with a death-defying ability: Relentless Endurance drops them to 1 HP instead of 0, once per long rest." },
+  { race: "Half-Orc", text: "Savage Attacks means a Half-Orc adds an extra weapon damage die on every critical hit — making crits dramatically more devastating." },
+  { race: "Half-Orc", text: "Many Half-Orcs in Waterdeep serve in the city guard, valued for their strength, resilience, and dedication to proving their worth." },
+  // Halfling
+  { race: "Halfling", text: "Halflings were called 'Hobbits' in the earliest D&D manuscripts — Tolkien's estate required a name change before publication." },
+  { race: "Halfling", text: "Halfling Lucky lets them reroll any natural 1 on attacks, ability checks, or saving throws — making them statistically resistant to catastrophic failure." },
+  { race: "Halfling", text: "Halflings have never had a homeland they could call their own — they live as wanderers or in small communities nestled within human cities." },
+  { race: "Halfling", text: "The halfling god Yondalla, the 'Protector and Provider,' is depicted as a plump, cheerful woman carrying a cornucopia and a shield." },
+  // Harengon
+  { race: "Harengon", text: "Harengon are rabbit-folk who escaped the Feywild into the Material Plane — their hopping movement still carries echoes of fey energy." },
+  { race: "Harengon", text: "A Harengon's Lucky Footwork lets them add 1d4 to Dexterity saving throws — their legendary fey-touched reflexes are built into their bones." },
+  { race: "Harengon", text: "Harengon can leap extraordinary distances without a running start, treating any jump as if they had full momentum." },
+  // Hexblood
+  { race: "Hexblood", text: "Hexbloods are mortals permanently marked by a hag's bargain or curse — not fully transformed, but never quite human again either." },
+  { race: "Hexblood", text: "The eerie streak of white hair common to Hexbloods is called a 'witch's mark' — considered an omen of ill fortune by superstitious folk." },
+  { race: "Hexblood", text: "Hexbloods can transmit whispered messages to others through their Hex magic — sending short words across vast distances once per day." },
+  // High Elf
+  { race: "High Elf", text: "High Elves are the most magically gifted elven subrace, born with one wizard cantrip of their choice already woven into their mind." },
+  { race: "High Elf", text: "In the Forgotten Realms, High Elves (called 'Tel'Quessir') once ruled the magical empire of Myth Drannor before its catastrophic fall." },
+  { race: "High Elf", text: "High Elves speak Elvish, Common, and one additional language of their choice — the broadest linguistic gift of any elven subrace." },
+  { race: "High Elf", text: "The High Elves of the Forgotten Realms trace their civilization back over 30,000 years — making them the oldest continuous culture on Toril." },
+  // Hobgoblin
+  { race: "Hobgoblin", text: "Hobgoblins are the most militaristic goblinoid race — their armies use complex strategy, flanking maneuvers, and actual supply line logistics." },
+  { race: "Hobgoblin", text: "Hobgoblin culture is honor-through-strength — showing mercy is considered weakness and invites social ridicule from peers." },
+  { race: "Hobgoblin", text: "Hobgoblin Martial Training gives them proficiency in two martial weapons and light armor from birth — warriors by nature and by choice." },
+  { race: "Hobgoblin", text: "The Hobgoblin deity Maglubiyet once defeated the goblin god Nomog-Geaya in combat, effectively enslaving the goblin race to Hobgoblin rule." },
+  // Human
+  { race: "Human", text: "Variant Humans are considered one of the strongest level-1 options in 5e — the only race that starts play with a free feat." },
+  { race: "Human", text: "Humans have no innate magic — their extraordinary power comes entirely from ambition, adaptability, and the capacity to learn anything." },
+  { race: "Human", text: "Humans reproduce and spread faster than any other playable race, making them the dominant population in nearly every D&D setting." },
+  { race: "Human", text: "In Eberron, Humans founded the great Dragonmarked Houses — the most powerful economic and political forces on the entire continent." },
+  { race: "Human", text: "Standard Humans gain +1 to every ability score — an unusually broad bonus that benefits any character build in any class." },
+  // Kalashtar
+  { race: "Kalashtar", text: "Kalashtar are humans merged with quori spirits — psychic beings from Dal Quor, the Region of Dreams, who fled their own plane." },
+  { race: "Kalashtar", text: "Kalashtar cannot dream — their quori spirit dreams instead during rest, sharing visions from the plane of Dal Quor with the host." },
+  { race: "Kalashtar", text: "Kalashtar share telepathic communication with any willing creature within 60 feet, transmitting concepts even across language barriers." },
+  { race: "Kalashtar", text: "The quori within each Kalashtar fled from the Dreaming Dark — a totalitarian regime of nightmare quori that controls Dal Quor." },
+  // Kender
+  { race: "Kender", text: "Kender from the Dragonlance setting are halfling-sized wanderers who are constitutionally incapable of feeling fear — not by bravery, but by nature." },
+  { race: "Kender", text: "Kender are infamous for 'handling' — their cultural term for picking up and examining any object they find interesting, regardless of ownership." },
+  { race: "Kender", text: "In 5e's 'Dragonlance: Shadow of the Dragon Queen,' Kender have a Taunt ability that provokes enemies into focusing their attacks." },
+  { race: "Kender", text: "A Kender's fearlessness is often mistaken for courage by other races — in truth, the concept of danger simply doesn't register for them." },
+  // Kenku
+  { race: "Kenku", text: "Kenku were once a winged race who could fly — their wings were taken as divine punishment for attempting to steal from their god." },
+  { race: "Kenku", text: "Kenku cannot create new sounds — they can only perfectly mimic sounds and voices they have heard. They have no original voice of their own." },
+  { race: "Kenku", text: "Kenku Expert Forgery allows them to duplicate any handwriting or craftwork perfectly after only a brief examination of the original." },
+  { race: "Kenku", text: "In the Forgotten Realms, Kenku gravitate toward urban environments and criminal life — their mimicry makes them exceptional infiltrators and spies." },
+  // Kobold
+  { race: "Kobold", text: "Kobolds are the most numerous humanoid race in the Underdark — their vast tunneling networks undermine many underground civilizations." },
+  { race: "Kobold", text: "Kobolds worship dragons above all gods — they genuinely believe themselves to be the chosen servants and distant kin of dragonkind." },
+  { race: "Kobold", text: "Pack Tactics gives Kobolds advantage on attack rolls whenever an ally is adjacent to their target — they are deadliest in groups." },
+  { race: "Kobold", text: "Despite their reputation for cowardice, Kobold engineers have designed traps that have killed more adventurers than most monsters." },
+  // Leonin
+  { race: "Leonin", text: "Leonin from the Theros setting are proud lion-folk who deeply distrust gods — having been abandoned by their deity, they trust only themselves." },
+  { race: "Leonin", text: "Leonin are one of the only races in D&D that actively reject divine worship as a cultural value." },
+  { race: "Leonin", text: "A Leonin's Daunting Roar can frighten multiple enemies simultaneously as a bonus action, sending weaker foes into panicked retreat." },
+  // Lizardfolk
+  { race: "Lizardfolk", text: "Lizardfolk are cold-blooded in every sense — they lack the emotional responses of warm-blooded races and process every situation with cold logic." },
+  { race: "Lizardfolk", text: "Lizardfolk can hold their breath for up to 15 minutes, swim at full speed, and eat fallen enemies to regain temporary hit points." },
+  { race: "Lizardfolk", text: "Lizardfolk view skull and scale trophies from defeated enemies as the highest form of wealth — worn proudly as jewelry and armor adornment." },
+  { race: "Lizardfolk", text: "Lizardfolk culture has no concept of personal names in the common sense — they use scent-based identifiers that translate poorly into humanoid speech." },
+  // Locathah
+  { race: "Locathah", text: "Locathah were once enslaved by the Sahuagin — their entire civilization is defined by their history of liberation and fierce independence." },
+  { race: "Locathah", text: "Locathah Leviathan Will gives them advantage against becoming charmed, frightened, paralyzed, poisoned, stunned, or unconscious all at once." },
+  { race: "Locathah", text: "Locathah are perfectly amphibious — they breathe air and water equally well, and move at full speed in both environments." },
+  // Lotusden Halfling
+  { race: "Lotusden Halfling", text: "Lotusden Halflings from Wildemount's Lotusden Greenwood have an innate bond with the forest, able to cast Tree Stride at higher levels." },
+  { race: "Lotusden Halfling", text: "Lotusden Halflings can cast Entangle as an innate spell, drawing on the deep root-magic of the ancient forest they call home." },
+  { race: "Lotusden Halfling", text: "Unlike their city-dwelling cousins, Lotusden Halflings prefer deep wilderness — their communities are rarely found near roads or major settlements." },
+  // Loxodon
+  { race: "Loxodon", text: "Loxodon from Ravnica are elephant-folk whose trunks serve as a snorkel, an extra limb, a scent organ, and a surprisingly frightening horn." },
+  { race: "Loxodon", text: "Loxodon Serenity gives them advantage on saves against being frightened or charmed — their placid nature is a genuine psychological fortress." },
+  { race: "Loxodon", text: "A Loxodon's memory is legendary — they recall every face they've ever met and every sound they've ever heard, sometimes for centuries." },
+  // Minotaur
+  { race: "Minotaur", text: "Minotaurs have a perfect sense of direction and can always retrace their path — they literally cannot become lost in a maze." },
+  { race: "Minotaur", text: "A Minotaur's Hammering Horns ability can push enemies back 10 feet after a melee hit — combining lethally with cliffs, pits, or fire." },
+  { race: "Minotaur", text: "In Theros D&D lore, the first Minotaur was Asterion — born from divine intervention and doomed to wander the first labyrinth forever." },
+  { race: "Minotaur", text: "Minotaur Goring Rush lets them make a bonus horn attack after using the Dash action — they fight better at a full charge than standing still." },
+  // Orc
+  { race: "Orc", text: "5e Orc player characters have Adrenaline Rush — they can Dash as a bonus action and gain temporary hit points, fueled by battle-rage." },
+  { race: "Orc", text: "Orcs worship Gruumsh One-Eye, who lost his eye to the elf god Corellon Larethian — creating the eternal divine enmity between their races." },
+  { race: "Orc", text: "In 2021, WotC revised the Orc race description to remove inherently evil racial traits, replacing them with the current neutral depiction." },
+  { race: "Orc", text: "Orcs are one of the few races with innate proficiency in Intimidation — making them natural figures of authority through fear alone." },
+  // Owlin
+  { race: "Owlin", text: "Owlin flight is completely silent — they produce no sound whatsoever as they move through the air, making them ghostly aerial ambushers." },
+  { race: "Owlin", text: "Owlin share the 120-foot darkvision range with Drow — tying for the longest dark sight of any core playable race." },
+  { race: "Owlin", text: "An Owlin's Silent Feathers grants proficiency in Stealth — combined with silent flight, they are the most effectively stealthy flying race." },
+  // Pallid Elf
+  { race: "Pallid Elf", text: "Pallid Elves from Wildemount are pale, contemplative elves who are unnervingly attuned to the world beyond the veil of the living." },
+  { race: "Pallid Elf", text: "Pallid Elves have innate access to Detect Thoughts and Uninvited Guests at higher levels — they have always half-existed in the spirit world." },
+  { race: "Pallid Elf", text: "In the Wildemount setting, Pallid Elves emerged from the Pallid Grove — a forest so ancient that even the oldest surface elves do not remember its founding." },
+  // Plasmoid
+  { race: "Plasmoid", text: "Plasmoids are sentient ooze-beings from Spelljammer who can squeeze through any gap at least 1 inch wide — locks are irrelevant to them." },
+  { race: "Plasmoid", text: "Plasmoids can form pseudopods up to 10 feet long, striking enemies without moving from their current position." },
+  { race: "Plasmoid", text: "A Plasmoid has no fixed shape — over the course of a long rest, they can reform into a completely different-looking body, face included." },
+  // Reborn
+  { race: "Reborn", text: "Reborn are characters who died and returned to life — mortals resurrected by mysterious forces, carrying only fragments of their past self." },
+  { race: "Reborn", text: "Despite looking like undead, Reborn are living creatures — they eat, breathe, and age, though much more slowly than normal mortals." },
+  { race: "Reborn", text: "Reborn have Fading Memories — they can occasionally recall fragments of their previous life as flashes of insight relevant to the current situation." },
+  // Satyr
+  { race: "Satyr", text: "Satyrs have Magic Resistance — advantage on saving throws against all spells and magical effects — one of the most powerful racial traits in 5e." },
+  { race: "Satyr", text: "Satyrs are fey creatures from Theros and the Feywild who are entirely immune to being put to sleep by magical means." },
+  { race: "Satyr", text: "A Satyr's Ram ability lets them push enemies back 10 feet with their horns — combining devastatingly with a nearby cliff or open window." },
+  // Sea Elf
+  { race: "Sea Elf", text: "Sea Elf civilization in the Forgotten Realms predates any surface nation — their coral cities have stood for over 20,000 years." },
+  { race: "Sea Elf", text: "Sea Elves can breathe water indefinitely and speak with any creature that breathes water as if casting Speak with Animals." },
+  { race: "Sea Elf", text: "Sea Elf skin ranges from deep ocean blue to pale sea-green to pearl white — evolved to shimmer and blend with the ever-shifting water." },
+  // Shadar-kai
+  { race: "Shadar-kai", text: "Shadar-kai are elves transformed by centuries of service to the Raven Queen — their emotions slowly fade into grey numbness in the Shadowfell." },
+  { race: "Shadar-kai", text: "Shadar-kai who stop seeking sensation — pain, pleasure, anything — gradually become wraiths, consumed by the Shadowfell's endless emptiness." },
+  { race: "Shadar-kai", text: "A Shadar-kai's Blessing of the Raven Queen lets them teleport through shadow, emerging momentarily wreathed in dark tendrils of dusk." },
+  // Shifter
+  { race: "Shifter", text: "Shifters are descended from humans and lycanthropes — they partially manifest their beast aspect in moments of battle or strong emotion." },
+  { race: "Shifter", text: "The four Shifter subraces each reflect a different beast heritage: Beasthide (bear), Longtooth (wolf), Swiftstride (cat), Wildhunt (predator)." },
+  { race: "Shifter", text: "In Eberron, Shifters are called 'the weretouched' by other races and often face discrimination — blamed for events caused by full lycanthropes." },
+  { race: "Shifter", text: "Shifting lasts for 1 minute and grants bonus hit points plus a unique benefit — once combat ends, the beast retreats back beneath the skin." },
+  // Simic Hybrid
+  { race: "Simic Hybrid", text: "Simic Hybrids are humanoids magically fused with aquatic creature traits by the Simic Combine guild of Ravnica — science, not sorcery." },
+  { race: "Simic Hybrid", text: "At character creation and again at level 5, Simic Hybrids choose animal enhancements: manta glide, carapace, grappling appendages, and more." },
+  { race: "Simic Hybrid", text: "The Simic Combine holds that all life should be free to evolve beyond its current form — Simic Hybrids are living proof of that philosophy." },
+  // Tabaxi
+  { race: "Tabaxi", text: "Tabaxi are cat-folk driven by insatiable curiosity — their Cat's Talent grants proficiency in both Perception and Stealth from the start." },
+  { race: "Tabaxi", text: "Tabaxi Feline Agility allows them to move at double speed for one turn — making them the fastest sprinting race in a single burst." },
+  { race: "Tabaxi", text: "Tabaxi come from a distant mysterious continent called Maztica — they travel as wandering collectors of stories, secrets, and curiosities." },
+  { race: "Tabaxi", text: "Tabaxi names are poetic descriptions rather than proper nouns — names like 'Cloud on the Mountaintop' or 'Ember of the Burning Sky' are common." },
+  // Thri-kreen
+  { race: "Thri-kreen", text: "Thri-kreen do not sleep at all — they are fully active every hour of every day, giving them extra downtime to craft and study." },
+  { race: "Thri-kreen", text: "Thri-kreen have four arms, allowing them to hold two shields, wield multiple weapons, or juggle items during conversation simultaneously." },
+  { race: "Thri-kreen", text: "Thri-kreen communicate through mandible-clicks and pheromones — their natural telepathy lets them share concepts with creatures that have no language." },
+  // Tiefling
+  { race: "Tiefling", text: "Every Tiefling in the Forgotten Realms traces their infernal mark to a single ancient bargain made between Asmodeus and the empire of Netheril." },
+  { race: "Tiefling", text: "Tiefling variants exist for each of the nine Archdevils — Zariel tieflings have bat wings; Glasya tieflings have innate invisibility." },
+  { race: "Tiefling", text: "Tieflings in Faerûn endure deep prejudice — many hide their horns and tuck their tails to pass as human in less tolerant cities." },
+  { race: "Tiefling", text: "The Hellish Rebuke spell, available to all Tieflings, allows them to curse attackers with fire damage — a reflex of infernal heritage." },
+  { race: "Tiefling", text: "In the Planescape setting, Tieflings are extremely common in Sigil — the City of Doors — where being touched by the planes is unremarkable." },
+  // Tortle
+  { race: "Tortle", text: "Tortles begin the game with a natural Armor Class of 17 without any armor — one of the highest unarmored ACs available at level 1." },
+  { race: "Tortle", text: "A Tortle can retreat entirely into their shell, gaining +4 AC and damage resistance while remaining immobile and purely defensive." },
+  { race: "Tortle", text: "Tortles are born on beaches and spend the first weeks of their lives at sea — every Tortle begins their existence as a swimmer." },
+  { race: "Tortle", text: "Tortle lifespans peak around 50 years — making them one of the shortest-lived playable races alongside Goblins and Kobolds." },
+  // Triton
+  { race: "Triton", text: "Tritons see themselves as noble guardians of the deep — sealing Abyssal threats beneath the waves that surface-dwellers never know existed." },
+  { race: "Triton", text: "Triton culture is deeply formal and subtly condescending — they consider their self-sacrifice for an ungrateful surface world a point of profound pride." },
+  { race: "Triton", text: "Tritons can control water, air currents, fog, and wind — their elemental connection to the ocean is as ancient as the sea itself." },
+  // Vedalken
+  { race: "Vedalken", text: "Vedalken are blue-skinned scholars from Ravnica who pursue perfection — their philosophy holds that flaws are merely unsolved problems." },
+  { race: "Vedalken", text: "Vedalken Tireless Precision adds 1d4 to one chosen skill and one chosen tool — making them the most specialized specialists in the game." },
+  { race: "Vedalken", text: "Vedalken experience a narrower emotional range than most races — their joy and sorrow are muted, but their analytical capability is without peer." },
+  // Verdan
+  { race: "Verdan", text: "Verdans are goblinoids transformed by Chaos magic into a new race — taller, greener, and empathic in ways their goblinoid cousins are not." },
+  { race: "Verdan", text: "Verdan telepathy is involuntary — they constantly sense the emotions of nearby creatures and cannot turn it off, even when they want to." },
+  { race: "Verdan", text: "Verdans can change their appearance dramatically as they age — growing taller, shifting pigment, or developing entirely new physical features." },
+  // Warforged
+  { race: "Warforged", text: "Warforged were built to fight in Eberron's Last War — when the war ended, they were left without purpose and without legal rights as citizens." },
+  { race: "Warforged", text: "Warforged don't eat, breathe, or sleep — they enter 'rest mode' during long rests: aware of their surroundings but inactive." },
+  { race: "Warforged", text: "Warforged Artificers can integrate tools directly into their body — an Artillerist can literally build a magical cannon into their chest." },
+  { race: "Warforged", text: "The oldest Warforged are only about 30 years old — yet many carry the psychological weight of a lifetime of unending war." },
+  { race: "Warforged", text: "A Warforged's body can be made of wood, metal, or stone — each material was originally chosen to match their military function." },
+  // Wood Elf
+  { race: "Wood Elf", text: "Wood Elves move at 35 feet per round — 5 feet faster than the standard — a reflection of a lifetime spent running through forest undergrowth." },
+  { race: "Wood Elf", text: "Wood Elves can attempt to hide even when only lightly obscured by foliage, rain, or dim natural light — invisibility in plain sight." },
+  { race: "Wood Elf", text: "Wood Elf culture values solitude and self-reliance — they rarely build permanent settlements, preferring seasonal migration through wild lands." },
+  { race: "Wood Elf", text: "The Wood Elves of the Forgotten Realms trace their heritage to the ancient empire of Aryvandaar, a civilization torn apart by elven civil war." },
+  // Yuan-ti Pureblood
+  { race: "Yuan-ti Pureblood", text: "Yuan-ti Purebloods appear almost entirely human — only subtle serpentine features like slit pupils or scaled skin patches betray their true nature." },
+  { race: "Yuan-ti Pureblood", text: "Yuan-ti are completely immune to all poison damage and the poisoned condition — a trait shared by no other core playable race." },
+  { race: "Yuan-ti Pureblood", text: "Yuan-ti worship the serpent god Sseth (or Merrshaulk) through elaborate blood-rites that mirror the cruelty at the heart of their civilization." },
+  { race: "Yuan-ti Pureblood", text: "Innate Spellcasting gives Yuan-ti Purebloods Animal Friendship (snakes only) at will, plus Suggestion and Fear as they grow in power." },
+  // Cross-race / general facts
+  { race: "D&D Lore", text: "The playable races in D&D have grown from just 5 options in 1974 — Human, Elf, Dwarf, Halfling, Half-Elf — to over 60 by 2024." },
+  { race: "D&D Lore", text: "Flying races like Aarakocra and Fairy are banned at many tables — the ability to fly at level 1 bypasses enormous amounts of dungeon design." },
+  { race: "D&D Lore", text: "Every D&D setting has a different set of 'common' races — Eberron features Warforged and Changelings; Theros has Leonin and Satyrs." },
+  { race: "D&D Lore", text: "In 2022's 'Monsters of the Multiverse,' WotC unified all race stat blocks under one consistent format for the first time in 5e's history." },
+  { race: "D&D Lore", text: "The Triton, Locathah, and Sea Elf are D&D's three dedicated aquatic playable races — each represents a distinct tier of ocean civilization." },
+  { race: "D&D Lore", text: "Dragonmarks from the Eberron setting are magical tattoos that appear on specific races and grant spell-like abilities unique to each mark." },
+  { race: "D&D Lore", text: "Goblinoids — Goblins, Bugbears, and Hobgoblins — share the same deity (Maglubiyet) and trace their lineage to a common ancestral people." },
+  { race: "D&D Lore", text: "The term 'race' in D&D's 5.5e revision was officially changed to 'species' — though the majority of tables still use the original terminology." },
+  { race: "D&D Lore", text: "The Hadozee, Giff, and Plasmoid are Spelljammer races — designed specifically for space-faring campaigns aboard magical ships between worlds." },
+  { race: "D&D Lore", text: "Every Elf subrace — Drow, High Elf, Wood Elf, Sea Elf, Eladrin, and Shadar-kai — was once a single unified elven people in the ancient world." },
+  { race: "D&D Lore", text: "Half-Elf and Half-Orc are the only 'half' races in the core rules — Half-Dragon and Half-Giant appear only in specific campaign settings." },
+  { race: "D&D Lore", text: "Dwarves have the slowest base speed of any core race at 25 feet — but they are the only race whose speed is never reduced by armor." },
 ];
 
 const CLASSES = ['Barbarian', 'Bard', 'Cleric', 'Druid', 'Fighter', 'Monk', 'Paladin', 'Ranger', 'Rogue', 'Sorcerer', 'Warlock', 'Wizard'];
