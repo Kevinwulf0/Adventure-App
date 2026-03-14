@@ -25,10 +25,10 @@ export default function Sheet() {
 
   if (!char) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-        <h2 className="text-2xl font-display text-primary mb-4">Scroll Not Found</h2>
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#fdf6e3]">
+        <h2 className="text-2xl font-display text-amber-900 mb-4 tracking-widest uppercase">Scroll Not Found</h2>
         <Link href="/">
-          <Button variant="outline">Return to Forge</Button>
+          <Button variant="outline" className="border-amber-900 text-amber-900">Return to Forge</Button>
         </Link>
       </div>
     );
@@ -89,55 +89,50 @@ ${char.backstory}
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex-1 flex flex-col w-full pb-20"
+      className="flex-1 flex flex-col w-full pb-20 bg-[#fdf6e3] min-h-screen" // Added parchment background color
     >
       {/* Top Action Bar */}
       <div className="flex justify-between items-center p-4">
         <Link href="/roster">
-          <Button variant="ghost" size="icon" className="rounded-full bg-background/50 border border-primary/20">
+          <Button variant="ghost" size="icon" className="rounded-full bg-amber-100/50 border border-amber-900/20 text-amber-900">
             <ArrowLeft className="w-5 h-5" />
           </Button>
         </Link>
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon" onClick={handleExport} className="rounded-full bg-background/50 border border-primary/20 text-primary">
+          <Button variant="ghost" size="icon" onClick={handleExport} className="rounded-full bg-amber-100/50 border border-amber-900/20 text-amber-900">
             {copied ? <CheckCircle2 className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleDelete} className="rounded-full bg-background/50 border border-destructive/30 text-destructive hover:bg-destructive/20 hover:text-destructive">
+          <Button variant="ghost" size="icon" onClick={handleDelete} className="rounded-full bg-red-100/50 border border-red-900/30 text-red-900 hover:bg-red-200">
             <Trash2 className="w-5 h-5" />
           </Button>
         </div>
       </div>
 
       <div className="px-6 pb-8 flex flex-col items-center">
-        <Portrait src={char.portraitUrl} alt={char.name} className="mt-2 mb-8" />
+        {/* The Portrait with a thematic border */}
+        <div className="p-2 border-4 border-amber-900 bg-white shadow-xl rotate-1 mt-2 mb-8">
+          <Portrait src={char.portraitUrl} alt={char.name} className="w-48 h-48 md:w-64 md:h-64 object-cover" />
+        </div>
         
-        <h2 className="text-4xl md:text-5xl font-display font-bold text-primary text-center text-glow mb-2">
+        <h2 className="text-4xl md:text-5xl font-display font-bold text-amber-950 text-center mb-2 uppercase tracking-tighter">
           {char.name}
         </h2>
         
         <div className="flex items-center space-x-3 mb-10">
-          <div className="px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary font-display font-bold text-sm tracking-widest uppercase shadow-[0_0_10px_rgba(234,179,8,0.1)]">
+          <div className="px-4 py-1.5 rounded-sm border-2 border-amber-900 bg-amber-200/30 text-amber-950 font-display font-bold text-sm tracking-widest uppercase shadow-sm">
             {char.race}
           </div>
-          <span className="text-primary/50 text-xl font-serif">&diams;</span>
-          <div className="px-4 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary font-display font-bold text-sm tracking-widest uppercase shadow-[0_0_10px_rgba(234,179,8,0.1)]">
+          <span className="text-amber-900/50 text-xl font-serif">⚔️</span>
+          <div className="px-4 py-1.5 rounded-sm border-2 border-amber-900 bg-amber-200/30 text-amber-950 font-display font-bold text-sm tracking-widest uppercase shadow-sm">
             {char.charClass}
           </div>
-          {char.powerLevel && (
-            <>
-              <span className="text-primary/50 text-xl font-serif">&diams;</span>
-              <div className="px-4 py-1.5 rounded-full border border-accent/30 bg-accent/10 text-accent font-display font-bold text-sm tracking-widest uppercase">
-                {char.powerLevel}
-              </div>
-            </>
-          )}
         </div>
 
-        {/* Stats Grid */}
-        <div className="w-full relative px-2 mb-12">
-          <div className="absolute inset-0 bg-card/50 border border-primary/10 rounded-2xl -z-10" />
-          <h3 className="absolute -top-3 left-1/2 -translate-x-1/2 bg-background px-4 text-sm font-display font-bold text-primary tracking-widest uppercase border border-primary/20 rounded-full">Attributes</h3>
-          <div className="grid grid-cols-3 gap-4 pt-8 pb-6 px-4">
+        {/* Stats Grid - Using the "Body" logic from earlier */}
+        <div className="w-full relative px-2 mb-12 max-w-2xl">
+          <div className="absolute inset-0 bg-[#fff9eb] border-2 border-amber-900/30 rounded-lg -z-10 shadow-inner" />
+          <h3 className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#fdf6e3] px-4 text-sm font-display font-bold text-amber-900 tracking-widest uppercase border border-amber-900/20 rounded-full">Attributes</h3>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 pt-8 pb-6 px-4">
             {statEntries.map(s => (
               <StatBlock 
                 key={s.label}
@@ -149,13 +144,13 @@ ${char.backstory}
           </div>
         </div>
 
-        {/* Backstory */}
-        <div className="w-full text-left space-y-6 bg-card border border-primary/20 rounded-2xl p-6 md:p-8 shadow-lg relative">
-          <div className="absolute top-4 right-4 text-6xl text-primary/10 font-serif leading-none opacity-50 select-none">"</div>
-          <h3 className="text-2xl font-display text-primary border-b border-primary/20 pb-2 mb-6">The Tale</h3>
+        {/* Backstory - Designed to look like an old scroll */}
+        <div className="w-full max-w-2xl text-left space-y-6 bg-[#fff9eb] border-2 border-amber-900/20 rounded-lg p-6 md:p-8 shadow-md relative">
+          <div className="absolute top-4 right-4 text-6xl text-amber-900/10 font-serif leading-none opacity-50 select-none">📜</div>
+          <h3 className="text-2xl font-display text-amber-950 border-b-2 border-amber-900/20 pb-2 mb-6 uppercase tracking-tight">The Tale</h3>
           {char.backstory.split('\n\n').map((paragraph, i) => (
-            <p key={i} className="text-foreground leading-relaxed text-lg font-serif">
-              {i === 0 && <span className="float-left text-5xl font-display text-primary leading-[0.8] mr-2 mt-1">{paragraph.charAt(0)}</span>}
+            <p key={i} className="text-stone-800 leading-relaxed text-lg font-serif">
+              {i === 0 && <span className="float-left text-5xl font-display text-amber-900 leading-[0.8] mr-2 mt-1">{paragraph.charAt(0)}</span>}
               {i === 0 ? paragraph.slice(1) : paragraph}
             </p>
           ))}
