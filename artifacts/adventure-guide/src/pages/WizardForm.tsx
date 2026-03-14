@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { 
@@ -8,8 +8,7 @@ import {
   Sparkles, 
   Info, 
   Shield, 
-  Swords, 
-  ScrollText 
+  PenLine 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -60,13 +59,13 @@ function D20Face({ num, isRolling }: { num: number; isRolling?: boolean }) {
   return (
     <motion.svg
       viewBox="0 0 64 64"
-      className="w-10 h-10 shrink-0"
+      className="w-10 h-10 shrink-0 text-yellow-500"
       animate={isRolling ? { rotate: [0, -25, 32, -20, 26, 0], y: [0, -10, 0] } : {}}
       transition={{ duration: 1.5 }}
     >
-      <polygon points="32,3 7,17 32,16" fill="rgba(234,179,8,0.17)" stroke="currentColor" strokeWidth="1.5" />
-      <polygon points="32,3 32,16 57,17" fill="rgba(234,179,8,0.13)" stroke="currentColor" strokeWidth="1.5" />
-      <polygon points="32,16 16,43 48,43" fill="rgba(234,179,8,0.28)" stroke="currentColor" strokeWidth="2" />
+      <polygon points="32,3 7,17 32,16" fill="currentColor" fillOpacity="0.2" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="32,3 32,16 57,17" fill="currentColor" fillOpacity="0.1" stroke="currentColor" strokeWidth="1.5" />
+      <polygon points="32,16 16,43 48,43" fill="currentColor" fillOpacity="0.3" stroke="currentColor" strokeWidth="2" />
       <text x="32" y="34" textAnchor="middle" dominantBaseline="middle" fontSize="12" fontWeight="bold" fill="currentColor">{num}</text>
     </motion.svg>
   );
@@ -82,7 +81,8 @@ export default function WizardForm() {
   const [isRolling, setIsRolling] = useState(false);
   const [rollNum, setRollNum] = useState(20);
 
-  const quote = NAME_QUOTES[Math.floor(Math.random() * NAME_QUOTES.length)];
+  // Memoize or select a quote only on initial load to prevent flickering
+  const [quote] = useState(() => NAME_QUOTES[Math.floor(Math.random() * NAME_QUOTES.length)]);
 
   const handleRollName = () => {
     setIsRolling(true);
@@ -146,12 +146,12 @@ export default function WizardForm() {
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-6">
                 <h2 className="text-3xl font-display font-bold text-primary flex items-center gap-2">
-                  <Shield className="Choose your lineage" /> Choose your lineage
+                  <Shield className="w-8 h-8" /> Choose your lineage
                 </h2>
                 <select 
                   value={race} 
                   onChange={(e) => setRace(e.target.value)}
-                  className="w-full bg-muted p-4 rounded-xl border-none outline-none ring-2 ring-transparent focus:ring-primary/50 appearance-none"
+                  className="w-full bg-muted p-4 rounded-xl border-none outline-none ring-2 ring-transparent focus:ring-primary/50 appearance-none text-foreground"
                 >
                   {RACES.map(r => <option key={r} value={r}>{r}</option>)}
                 </select>
@@ -167,10 +167,10 @@ export default function WizardForm() {
                 <Sparkles className="w-16 h-16 text-primary mx-auto mb-4" />
                 <h2 className="text-3xl font-display font-bold">Ready to Begin?</h2>
                 <p className="text-muted-foreground">Your {race} {charClass}, <span className="text-foreground font-bold">{name || "Unnamed Traveler"}</span>, is ready for the call to adventure.</p>
-                <div className="grid grid-cols-2 gap-4 text-left">
+                <div className="grid grid-cols-1 gap-4 text-left">
                   <div className="bg-muted/50 p-4 rounded-xl">
                     <span className="text-xs font-bold text-muted-foreground block uppercase">Class</span>
-                    <select value={charClass} onChange={(e) => setCharClass(e.target.value)} className="bg-transparent border-none outline-none font-bold w-full">
+                    <select value={charClass} onChange={(e) => setCharClass(e.target.value)} className="bg-transparent border-none outline-none font-bold w-full text-foreground">
                       {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
