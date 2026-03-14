@@ -9,16 +9,22 @@ import Sheet from "@/pages/Sheet";
 import Roster from "@/pages/Roster";
 import NotFound from "@/pages/not-found";
 
+// This is the global data manager for your app
 const queryClient = new QueryClient();
 
 function Router() {
   return (
     <AppLayout>
       <Switch>
-        {/* Home defaults to Hero mode */}
+        {/* The 'WizardForm' is where the user will enter details to generate a character */}
         <Route path="/" component={() => <WizardForm mode="hero" />} />
+        
+        {/* The 'Tavern' is for NPC generation */}
         <Route path="/tavern" component={() => <WizardForm mode="npc" />} />
+        
+        {/* The 'Sheet' is where our new CharacterCard UI will live! */}
         <Route path="/sheet/:id" component={Sheet} />
+        
         <Route path="/roster" component={Roster} />
         <Route component={NotFound} />
       </Switch>
@@ -30,7 +36,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        {/* This handles the URL paths so the 'Back' button works in your browser */}
+        <WouterRouter base={import.meta.env.BASE_URL?.replace(/\/$/, "") || ""}>
           <Router />
         </WouterRouter>
         <Toaster />
